@@ -1,0 +1,170 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.padding-bottom-5 {
+    padding-bottom: 5px;
+}
+
+.padding-bottom-20 {
+    padding-bottom: 20px;
+}
+
+.no-padding-left {
+    padding-left: 0px !important;
+}
+
+.no-padding-right {
+    padding-right: 0px !important;
+}
+
+.no-padding {
+    padding: 0 0 0 0 !important;
+}
+
+.question-card {
+    position: absolute;
+    left: 200px;
+    top: 320px;
+    border: 3px solid #d3d3d3;
+    border-radius: 25px
+}
+
+.question-text {
+    position: absolute;
+    left: 220px;
+    top: 340px;
+}
+
+.question-back {
+    background-color: aqua;
+}
+
+.question-front {
+    background-color: gray;
+}
+
+.answer-back{
+    background-color: aqua;
+}
+
+.answer {
+    border-radius: 25px 25px 25px 25px;
+    position: absolute;
+    border: 3px solid #d3d3d3;
+}
+
+.answer-text-a {
+    position: absolute;
+    left: 300px;
+    top: 515px;
+    background-color: transparent;
+}
+
+.answer-text-b {
+    position: absolute;
+    left: 970px;
+    top: 515px;
+    background-color: transparent;
+}
+
+.answer-text-c {
+    position: absolute;
+    left: 300px;
+    top: 615px;
+    background-color: transparent;
+}
+
+.answer-text-d {
+    position: absolute;
+    left: 970px;
+    top: 615px;
+    background-color: transparent;
+}
+
+.answer-card-a {
+    position: absolute;
+    left: 200px;
+    top: 500px;
+}
+
+.answer-card-b {
+    position: absolute;
+    left: 870px;
+    top: 500px;
+}
+
+.answer-card-c {
+    position: absolute;
+    left: 200px;
+    top: 600px;
+}
+
+.answer-card-d {
+    position: absolute;
+    left: 870px;
+    top: 600px;
+}
+
+.answer-choice-a {
+    position: absolute;
+    left: 230px;
+    top: 515px;
+    background-color: transparent;
+}
+
+.answer-choice-b {
+    position: absolute;
+    left: 902px;
+    top: 515px;
+    background-color: transparent;
+}
+
+.answer-choice-c {
+    position: absolute;
+    left: 230px;
+    top: 615px;
+    background-color: transparent;
+}
+
+.answer-choice-d {
+    position: absolute;
+    left: 902px;
+    top: 615px;
+    background-color: transparent;
+}
+
+.answer-front{
+    background-color: gray;
+}
+
+.clock {
+    border-radius: 125px;
+    position: absolute;
+    border: 3px solid #d3d3d3;
+    left: 687px;
+    top: 514px;
+}
+
+body{
+    background-color:navy;
+}
