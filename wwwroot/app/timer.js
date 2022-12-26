@@ -26,9 +26,12 @@ var App;
             this.timerElement.style.animationName = "arc, col";
             this.timerElement.style.animationPlayState = "paused";
         };
-        Timer.prototype.displayTime = function () {
+        Timer.prototype.startTimer = function (initialTime) {
             var _this = this;
-            var ctrl = this;
+            this.time = initialTime;
+            this.timerOn = true;
+            this.setTimerDrawing();
+            var deferred = this.$q.defer();
             $("#timerText").text(this.time);
             this.intervalId = setInterval(function () {
                 if (_this.timerOn)
@@ -36,14 +39,10 @@ var App;
                 $("#timerText").text(_this.time);
                 if (_this.time === 0) {
                     _this.clearTimer();
+                    deferred.resolve((true));
                 }
             }, 1000);
-        };
-        Timer.prototype.startTimer = function (initialTime) {
-            this.time = initialTime;
-            this.timerOn = true;
-            this.displayTime();
-            this.setTimerDrawing();
+            return deferred.promise;
         };
         Timer.prototype.resumeTimer = function () {
             this.timerOn = true;

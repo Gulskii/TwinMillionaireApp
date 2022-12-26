@@ -1,3 +1,20 @@
+:root {
+    --twinGold: #cfac48;
+    --twinTeal: #00e7ff;
+    --twinRed: #9b0009;
+    --twinGreen: #00FF00;
+    --twinLifeline1: #d9fdfd;
+    --twinLifeline2: #c4f0ff;
+    --twinLifeline3: #5681ff;
+    --twinLifeline4: #3048ff;
+    --twinFont: "Bebas-Regular";
+}
+
+@font-face {
+    font-family: "Bebas-Regular";
+    src: url(./fonts/FontsFree-Net-Bebas-Regular.ttf ) format("truetype");
+}
+
 html {
   font-size: 14px;
 }
@@ -56,21 +73,28 @@ body {
 }
 
 .question-back {
-    background-color: aqua;
+    background-color: var(--twinTeal);
 }
 
 .question-front {
-    background-color: gray;
+    background-color: var(--twinGold);
 }
 
 .answer-back{
-    background-color: aqua;
+    background-color: var(--twinTeal);
 }
 
 .answer {
-    border-radius: 25px 25px 25px 25px;
     position: absolute;
-    border: 3px solid #d3d3d3;
+    border: 3px solid #d3d3d3;   
+}
+
+.answer-left {
+    border-radius: 25px 0px 0px 25px;   
+}
+
+.answer-right {
+    border-radius: 0px 25px 25px 0px;    
 }
 
 .answer-text-a {
@@ -153,8 +177,22 @@ body {
     background-color: transparent;
 }
 
-.answer-front{
-    background-color: gray;
+.answer-front {
+    background-color: var(--twinGold);    
+}
+
+@keyframes blink {
+    0% {
+        background-color: var(--twinTeal);
+    }
+
+    50% {
+        background-color: var(--twinGold);
+    }
+
+    100% {
+        background-color: var(--twinTeal);
+    }
 }
 
 .clock {

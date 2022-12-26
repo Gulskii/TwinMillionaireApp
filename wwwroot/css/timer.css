@@ -1,4 +1,6 @@
-﻿.countdown {
+﻿@import "./site.css";
+
+.countdown {
     display: grid;
     position: absolute;
     margin: 0px;
@@ -107,7 +109,7 @@ svg {
     [r] + [r] {
         transform: rotate(-90deg);
         stroke-linecap: round;
-        stroke: #8A9B0F;
+        stroke: var(--twinGold);
         animation: arc 60s linear;
         animation-name: arc, col;
     }
@@ -118,7 +120,7 @@ svg {
     }
 }
 
-@keyframes col {
+/*@keyframes col {
     0% {
         stroke: #8A9B0F;
     }
@@ -138,11 +140,11 @@ svg {
     100% {
         stroke: #490A3D;
     }
-}
+}*/
 
 
 .textTimer {
-    font: 52px consolas;
+    font: 52px var(--twinFont);
     color: white;
     position: absolute;
     left: 0px;

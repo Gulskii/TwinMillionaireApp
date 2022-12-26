@@ -30,13 +30,10 @@ var App;
                         'stopClock': this.stopClock,
                         'resumeClock': this.resumeClock,
                         'clearClock': this.clearClock,
-                        'showAudienceAnswersGraph': this.showAudienceAnswersGraph
+                        'showAudienceAnswersGraph': this.showAudienceAnswersGraph,
+                        'hideAudienceAnswersGraph': this.hideAudienceAnswersGraph
                     };
                     this.revealCount = 0;
-                    //this.$scope.unitNumber = this.$attrs["unitNumber"];
-                    //this.$scope.settingService = JSON.parse(JSON.parse(JSON.stringify(this.$attrs["softwareSettings"])));
-                    //this.$scope.filteredUnits = new Array<IAutoCompleteView>();
-                    //this.$scope.filteredGenericOptions = new Array<IAutoCompleteView>();
                     this.$scope.chosenQuestion = {};
                     this.$scope.audienceAnswers = [];
                     this.socketClient = new App.WebSocketClient(this.magicWand, this);
@@ -47,9 +44,14 @@ var App;
                     $("#AnswerDFlipped").val("false");
                     this.$scope.accessToken = $("#accessToken").val();
                     this.$scope.ctrl = this;
+                    var ctrl = this;
+                    this.showAudienceAnswers = false;
+                    this.audienceAnswersGraph = null;
                     this.socket = this.socketClient.createSocket(this.baseUrl);
                     this.drawInitialQuestion("Question");
-                    this.drawAnswers();
+                    $timeout(function () {
+                        ctrl.drawAnswers();
+                    }, 500);
                     this.timer = new App.Timer(this.$q, "timer");
                 }
                 HomeIndexController.prototype.openRemote = function () {
@@ -101,19 +103,19 @@ var App;
                     ctrl.changeAllAnswerColors();
                     switch (data) {
                         case 1: {
-                            ctrl.changeAnswerColors("AnswerA", 'Orange');
+                            ctrl.changeAnswerColors("AnswerA", App.TwinTeal);
                             break;
                         }
                         case 2: {
-                            ctrl.changeAnswerColors("AnswerB", 'Orange');
+                            ctrl.changeAnswerColors("AnswerB", App.TwinTeal);
                             break;
                         }
                         case 3: {
-                            ctrl.changeAnswerColors("AnswerC", 'Orange');
+                            ctrl.changeAnswerColors("AnswerC", App.TwinTeal);
                             break;
                         }
                         case 4: {
-                            ctrl.changeAnswerColors("AnswerD", 'Orange');
+                            ctrl.changeAnswerColors("AnswerD", App.TwinTeal);
                             break;
                         }
                         default:
@@ -125,25 +127,25 @@ var App;
                     console.log("revealAnswer" + data);
                     ctrl.changeAllAnswerColors();
                     var isCorrect = (ctrl.playerChoice === ctrl.$scope.chosenQuestion.correctAnswer);
-                    var color = 'Turquoise';
+                    var color = App.TwinTeal;
                     if (isCorrect) {
-                        color = 'Green';
+                        color = App.TwinGreen;
                     }
                     switch (ctrl.$scope.chosenQuestion.correctAnswer) {
                         case 1: {
-                            ctrl.changeAnswerColors("AnswerA", color);
+                            ctrl.turnOnCorrectAnswerLoop("AnswerA", color, isCorrect);
                             break;
                         }
                         case 2: {
-                            ctrl.changeAnswerColors("AnswerB", color);
+                            ctrl.turnOnCorrectAnswerLoop("AnswerB", color, isCorrect);
                             break;
                         }
                         case 3: {
-                            ctrl.changeAnswerColors("AnswerC", color);
+                            ctrl.turnOnCorrectAnswerLoop("AnswerC", color, isCorrect);
                             break;
                         }
                         case 4: {
-                            ctrl.changeAnswerColors("AnswerD", color);
+                            ctrl.turnOnCorrectAnswerLoop("AnswerD", color, isCorrect);
                             break;
                         }
                         default:
@@ -152,19 +154,19 @@ var App;
                     if (!isCorrect) {
                         switch (ctrl.playerChoice) {
                             case 1: {
-                                ctrl.changeAnswerColors("AnswerA", "Red");
+                                ctrl.changeAnswerColors("AnswerA", App.TwinRed);
                                 break;
                             }
                             case 2: {
-                                ctrl.changeAnswerColors("AnswerB", "Red");
+                                ctrl.changeAnswerColors("AnswerB", App.TwinRed);
                                 break;
                             }
                             case 3: {
-                                ctrl.changeAnswerColors("AnswerC", "Red");
+                                ctrl.changeAnswerColors("AnswerC", App.TwinRed);
                                 break;
                             }
                             case 4: {
-                                ctrl.changeAnswerColors("AnswerD", "Red");
+                                ctrl.changeAnswerColors("AnswerD", App.TwinRed);
                                 break;
                             }
                             default:
@@ -192,18 +194,39 @@ var App;
                 HomeIndexController.prototype.changeAnswerColors = function (identity, color) {
                     document.getElementById(identity + "Card").style.backgroundColor = color;
                 };
+                HomeIndexController.prototype.turnOnCorrectAnswerLoop = function (identity, color, isCorrect) {
+                    if (!isCorrect) {
+                        var el = $("#" + identity + "Card");
+                        el.before(el.clone(true)).remove();
+                        this.drawAnwserCardFront(identity, false);
+                        document.getElementById(identity + "Card").style.backgroundColor = App.TwinTeal;
+                        document.getElementById(identity + "Card").style.animation = "blink 1500ms";
+                        document.getElementById(identity + "Card").style.animationDelay = "500ms";
+                        document.getElementById(identity + "Card").style.animationIterationCount = "3";
+                    }
+                    else {
+                        this.changeAnswerColors(identity, color);
+                    }
+                };
                 HomeIndexController.prototype.changeAllAnswerColors = function () {
-                    this.changeAnswerColors("AnswerA", "gray");
-                    this.changeAnswerColors("AnswerB", "gray");
-                    this.changeAnswerColors("AnswerC", "gray");
-                    this.changeAnswerColors("AnswerD", "gray");
+                    this.changeAnswerColors("AnswerA", App.TwinGold);
+                    this.changeAnswerColors("AnswerB", App.TwinGold);
+                    this.changeAnswerColors("AnswerC", App.TwinGold);
+                    this.changeAnswerColors("AnswerD", App.TwinGold);
                 };
                 HomeIndexController.prototype.revealCorrectAnswer = function (ctrl, data) {
                     ctrl.revealAnswer(ctrl, data);
                 };
                 HomeIndexController.prototype.startClock = function (ctrl, data) {
                     console.log("startClock");
-                    ctrl.timer.startTimer(data);
+                    ctrl.timer.startTimer(data).then(function (result) {
+                        if (result === true) {
+                            var webSocketCall = ctrl.socketClient.createWebSocketCall("timeUp", null);
+                            ctrl.socket.send(JSON.stringify(webSocketCall));
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
                 };
                 HomeIndexController.prototype.resumeClock = function (ctrl, data) {
                     console.log("resumeClock");
@@ -217,9 +240,22 @@ var App;
                     console.log("clearClock");
                     ctrl.timer.clearTimer();
                 };
-                HomeIndexController.prototype.showAudienceAnswersGraph = function (ctrl, data) {
+                HomeIndexController.prototype.showAudienceAnswersGraph = function (ctrl) {
                     console.log("showAudienceAnswersGraph");
-                    ctrl.createAudienceAnswersGraph();
+                    ctrl.dataService.getAudienceAnswers().then(function (results) {
+                        ctrl.$scope.audienceAnswers = results;
+                        ctrl.createAudienceAnswersGraph();
+                        ctrl.showAudienceAnswers = true;
+                        ctrl.$scope.$applyAsync();
+                    });
+                };
+                HomeIndexController.prototype.hideAudienceAnswersGraph = function (ctrl, data) {
+                    console.log("hideAudienceAnswersGraph");
+                    ctrl.showAudienceAnswers = false;
+                    ctrl.$scope.$applyAsync();
+                };
+                HomeIndexController.prototype.displayAudienceAnswers = function () {
+                    return this.showAudienceAnswers;
                 };
                 HomeIndexController.prototype.getAudienceLeaderboard = function () {
                     var _this = this;
@@ -227,15 +263,10 @@ var App;
                         _this.$scope.audienceLeaderboard = results;
                     });
                 };
-                HomeIndexController.prototype.getAudienceAnswers = function () {
-                    var _this = this;
-                    this.dataService.getAudienceAnswers().then(function (results) {
-                        _this.$scope.audienceAnswers = results;
-                        _this.createAudienceAnswersGraph();
-                    });
-                };
                 HomeIndexController.prototype.createAudienceAnswersGraph = function () {
-                    var ctx = document.getElementById("audienceAnswersGraph");
+                    var canvas = document.getElementById("audienceAnswersGraph");
+                    var ctx = canvas.getContext("2d");
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                     var e = { id: "379260db-cc3f-4b2c-a0f8-fb827ff0a282", userName: "gulski", answerChosen: 1 };
                     var ee = { id: "379260db-cc3f-4b2c-a0f8-fb827ff0a282", userName: "gulski", answerChosen: 2 };
                     var eee = { id: "379260db-cc3f-4b2c-a0f8-fb827ff0a282", userName: "gulski", answerChosen: 2 };
@@ -246,17 +277,28 @@ var App;
                     var c = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 3; }).length;
                     var d = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 4; }).length;
                     var total = a + b + c + d;
-                    var s = new Chart(ctx, {
+                    canvas.style.backgroundColor = 'limegreen';
+                    var grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    grd.addColorStop(0, App.TwinLifeline1);
+                    grd.addColorStop(.33, App.TwinLifeline2);
+                    grd.addColorStop(.66, App.TwinLifeline3);
+                    grd.addColorStop(1, App.TwinLifeline4);
+                    ctx.fillStyle = grd;
+                    if (this.audienceAnswersGraph !== null)
+                        this.audienceAnswersGraph.destroy();
+                    this.audienceAnswersGraph = new Chart(canvas, {
                         type: 'bar',
                         data: {
-                            labels: ['!a', '!b', '!c', '!d'],
+                            labels: ['A', 'B', 'C', 'D'],
                             datasets: [{
                                     label: '# of Votes',
                                     data: [a, b, c, d],
-                                    borderWidth: 1
+                                    borderWidth: 1,
+                                    backgroundColor: grd
                                 }]
                         },
                         options: {
+                            responsive: false,
                             animation: {
                                 easing: "easeInCubic"
                             },
@@ -268,6 +310,10 @@ var App;
                                 xAxes: [{
                                         gridLines: {
                                             display: false
+                                        },
+                                        ticks: {
+                                            fontSize: 24,
+                                            fontFamily: App.TwinFont
                                         }
                                     }],
                                 yAxes: [{
@@ -275,6 +321,7 @@ var App;
                                             display: false
                                         },
                                         ticks: {
+                                            beginAtZero: true,
                                             display: false
                                         }
                                     }]
@@ -293,12 +340,11 @@ var App;
                             }
                         }
                     });
-                    console.log(s.generateLegend());
                 };
                 HomeIndexController.prototype.drawQuestionText = function (identity, text) {
                     var canvas = document.getElementById(identity + 'Text');
                     var context = canvas.getContext("2d");
-                    context.font = "32px Arial";
+                    context.font = "32px " + App.TwinFont;
                     this.wrapText(canvas, 0, context, text, (canvas.width / 2), 32, canvas.width, 32);
                     canvas.style.transform = "rotatex(" + 90 + "deg)";
                 };
@@ -331,7 +377,7 @@ var App;
                 };
                 HomeIndexController.prototype.drawInitialAnswer = function (identity, choiceText) {
                     this.drawAnswerText(identity, "");
-                    this.drawAnwserCardFront(identity);
+                    this.drawAnwserCardFront(identity, true);
                     this.drawAnswerChoice(identity, choiceText);
                     this.drawAnwserBack(identity);
                 };
@@ -339,21 +385,23 @@ var App;
                     var ctrl = this;
                     var canvas = document.getElementById(identity + 'Text');
                     var context = canvas.getContext("2d");
-                    this.fitTextOnCanvas(canvas, context, 0, 0, answer, "verdana");
+                    this.fitTextOnCanvas(canvas, context, 0, 0, answer, App.TwinFont);
                     canvas.style.transform = "rotatex(" + 90 + "deg)";
                 };
-                HomeIndexController.prototype.drawAnwserCardFront = function (identity) {
+                HomeIndexController.prototype.drawAnwserCardFront = function (identity, flip) {
                     var ctrl = this;
                     var canvas = document.getElementById(identity + 'Card');
                     var context = canvas.getContext("2d");
                     this.drawAnswerTemplate(context);
-                    canvas.style.transform = "rotatex(" + 90 + "deg)";
+                    if (flip) {
+                        canvas.style.transform = "rotatex(" + 90 + "deg)";
+                    }
                 };
                 HomeIndexController.prototype.drawAnswerChoice = function (identity, text) {
                     var ctrl = this;
                     var canvas = document.getElementById(identity + 'Choice');
                     var context = canvas.getContext("2d");
-                    this.fitTextOnCanvas(canvas, context, 0, 0, text, "verdana");
+                    this.fitTextOnCanvas(canvas, context, 0, 0, text, App.TwinFont);
                     canvas.style.transform = "rotatex(" + 90 + "deg)";
                 };
                 HomeIndexController.prototype.drawAnwserBack = function (identity) {
@@ -385,7 +433,7 @@ var App;
                     var canvas = document.getElementById(identity + 'Text');
                     var context = canvas.getContext("2d");
                     var text = answer;
-                    this.fitTextOnCanvas(canvas, context, 0, 0, text, "verdana");
+                    this.fitTextOnCanvas(canvas, context, 0, 0, text, App.TwinFont);
                 };
                 HomeIndexController.prototype.bounds = function (x, y, context, text) {
                     var metrics = context.measureText(text);
@@ -413,6 +461,9 @@ var App;
                     var yTotal = 0;
                     var actualTextHeight = 0;
                     var yAlignment = 0;
+                    context.fillStyle = "white";
+                    context.strokeStyle = 'black';
+                    context.lineWidth = 1.5;
                     // lower the font size until the text fits the canvas
                     do {
                         fontsize--;
@@ -429,6 +480,7 @@ var App;
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     context.textAlign = "center";
                     context.fillText(text, (canvas.width / 2), (canvas.height - boundary.top));
+                    context.strokeText(text, (canvas.width / 2), (canvas.height - boundary.top));
                 };
                 HomeIndexController.prototype.xAlign = function (cWidth, tWidth) {
                     return ((cWidth - tWidth) / 2);
@@ -440,11 +492,15 @@ var App;
                     var words = text.split(' ');
                     var line = '';
                     var metrics = context.measureText(text);
+                    context.fillStyle = "white";
+                    context.strokeStyle = 'black';
+                    context.lineWidth = 1.5;
                     if (metrics.width < canvas.width) {
                         y = ((canvas.height + metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) / 2);
                         context.clearRect(0, 0, canvas.width, canvas.height);
                         context.textAlign = "center";
                         context.fillText(text, x, y);
+                        context.strokeText(text, x, y);
                     }
                     else {
                         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -455,6 +511,7 @@ var App;
                             if (testWidth > maxWidth && n > 0) {
                                 context.textAlign = "center";
                                 context.fillText(line, x, y);
+                                context.strokeText(line, x, y);
                                 line = words[n] + ' ';
                                 y += lineHeight;
                             }
@@ -464,6 +521,7 @@ var App;
                         }
                         context.textAlign = "center";
                         context.fillText(line, x, y);
+                        context.strokeText(line, x, y);
                     }
                 };
                 HomeIndexController.prototype.flip = function (identity, isAnswer) {

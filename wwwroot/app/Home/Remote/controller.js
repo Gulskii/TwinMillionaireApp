@@ -22,7 +22,9 @@ var App;
                     this.$window = $window;
                     this.dataService = dataService;
                     this.baseUrl = baseUrl;
-                    this.magicWand = {};
+                    this.magicWand = {
+                        'timeUp': this.timeUp
+                    };
                     this.flipCount = 0;
                     this.$scope.chosenQuestion = {};
                     this.$scope.newQuestion = {};
@@ -89,13 +91,6 @@ var App;
                     var _this = this;
                     this.dataService.getAudienceLeaderboard().then(function (results) {
                         _this.$scope.audienceLeaderboard = results;
-                    });
-                };
-                HomeRemoteController.prototype.getAudienceAnswers = function () {
-                    var _this = this;
-                    this.dataService.getAudienceAnswers().then(function (results) {
-                        _this.$scope.audienceAnswers = results;
-                        _this.createAudienceAnswersGraph();
                     });
                 };
                 HomeRemoteController.prototype.addQuestion = function (question) {
@@ -166,7 +161,7 @@ var App;
                             this.$scope.clockSetTime = 60;
                             break;
                         case 5 /* DifficultyLevelType.Impossible */:
-                            this.$scope.clockSetTime = 0;
+                            this.$scope.clockSetTime = 80;
                             break;
                     }
                 };
@@ -206,13 +201,14 @@ var App;
                     this.clearClock();
                     var webSocketCall = this.socketClient.createWebSocketCall("confirmAnswer", answer);
                     this.socket.send(JSON.stringify(webSocketCall));
-                };
-                HomeRemoteController.prototype.timeUp = function () {
-                    this.currentRoundState = 5 /* RoundState.AnswerChosen */;
-                    this.clearClock();
-                    var webSocketCall = this.socketClient.createWebSocketCall("confirmAnswer", null);
-                    this.socket.send(JSON.stringify(webSocketCall));
                     this.dataService.closeTakingAnswers();
+                };
+                HomeRemoteController.prototype.timeUp = function (ctrl, data) {
+                    ctrl.currentRoundState = 5 /* RoundState.AnswerChosen */;
+                    ctrl.clearClock();
+                    var webSocketCall = ctrl.socketClient.createWebSocketCall("confirmAnswer", null);
+                    ctrl.socket.send(JSON.stringify(webSocketCall));
+                    ctrl.dataService.closeTakingAnswers();
                 };
                 HomeRemoteController.prototype.revealCorrectAnswer = function () {
                     this.currentRoundState = 1 /* RoundState.Start */;
@@ -265,61 +261,9 @@ var App;
                     var webSocketCall = this.socketClient.createWebSocketCall("showAudienceAnswersGraph", null);
                     this.socket.send(JSON.stringify(webSocketCall));
                 };
-                HomeRemoteController.prototype.createAudienceAnswersGraph = function () {
-                    var ctx = document.getElementById("audienceAnswersGraph");
-                    var a = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 1; }).length;
-                    var b = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 2; }).length;
-                    var c = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 3; }).length;
-                    var d = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 4; }).length;
-                    var total = a + b + c + d;
-                    var s = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: ['!a', '!b', '!c', '!d'],
-                            datasets: [{
-                                    label: '# of Votes',
-                                    data: [a, b, c, d],
-                                    borderWidth: 1
-                                }]
-                        },
-                        options: {
-                            animation: {
-                                easing: "easeInCubic"
-                            },
-                            maintainAspectRatio: false,
-                            legend: {
-                                display: false
-                            },
-                            scales: {
-                                xAxes: [{
-                                        gridLines: {
-                                            display: false
-                                        }
-                                    }],
-                                yAxes: [{
-                                        gridLines: {
-                                            display: false
-                                        },
-                                        ticks: {
-                                            display: false
-                                        }
-                                    }]
-                            },
-                            tooltips: {
-                                callbacks: {
-                                    label: function (tooltipItem, data) {
-                                        var label = data.datasets[tooltipItem.datasetIndex].label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        label += Math.round(tooltipItem.yLabel * 100) / 100;
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    console.log(s.generateLegend());
+                HomeRemoteController.prototype.hideAudienceAnswersGraph = function () {
+                    var webSocketCall = this.socketClient.createWebSocketCall("hideAudienceAnswersGraph", null);
+                    this.socket.send(JSON.stringify(webSocketCall));
                 };
                 HomeRemoteController.$inject = [
                     '$scope',
