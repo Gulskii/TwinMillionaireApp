@@ -8,7 +8,7 @@
     height: 150px;
     left: 690px;
     top: 514px;
-}    
+}
 
 @keyframes num {
     0% {
@@ -103,16 +103,31 @@ svg {
 
 [r] {
     fill: none;
-    stroke: silver;
+    stroke: black;
 }
 
     [r] + [r] {
-        transform: rotate(-90deg);
-        stroke-linecap: round;
-        stroke: var(--twinGold);
-        animation: arc 60s linear;
-        animation-name: arc, col;
+        fill: none;
+        stroke: silver;
     }
+
+        [r] + [r] + [r] {
+            transform: rotate(-90deg);
+            stroke-linecap: round;
+            stroke: black;
+            stroke-width: 13;
+            animation: arc 60s linear;
+            animation-name: arc, col;
+        }
+
+            [r] + [r] + [r] + [r] {
+                transform: rotate(-90deg);
+                stroke-linecap: round;
+                stroke: var(--twinYellow);
+                stroke-width: 10;
+                animation: arc 60s linear;
+                animation-name: arc, col;
+            }
 
 @keyframes arc {
     0% {

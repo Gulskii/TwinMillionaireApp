@@ -52,8 +52,27 @@ var App;
                     $timeout(function () {
                         ctrl.drawAnswers();
                     }, 500);
-                    this.timer = new App.Timer(this.$q, "timer");
+                    this.timer = new App.Timer(this.$q, "timer", "timerOutline");
+                    this.$scope.progressSegments = [];
+                    this.$scope.progressBar = 0;
+                    this.$scope.progressBarMax = 200;
+                    this.$scope.progressAddRemove = 0;
+                    this.numberOfQuestions = 15;
+                    this.generateProgressSegments();
                 }
+                HomeIndexController.prototype.generateProgressSegments = function () {
+                    var count = 1;
+                    this.$scope.progressSegments = [];
+                    while (count <= this.numberOfQuestions) {
+                        var ps = {
+                            text: "Question " + count,
+                            progressStatus: 1 /* ProgressStatus.Inactive */
+                        };
+                        this.$scope.progressSegments.unshift(ps);
+                        count++;
+                    }
+                    this.$scope.progressSegments[this.numberOfQuestions - 1].progressStatus = 2 /* ProgressStatus.Current */;
+                };
                 HomeIndexController.prototype.openRemote = function () {
                     window.open("/Home/Remote", "newwindow", "width=800,height=800,left=150,top=200,toolbar=0,status=0,");
                 };
@@ -200,9 +219,9 @@ var App;
                         el.before(el.clone(true)).remove();
                         this.drawAnwserCardFront(identity, false);
                         document.getElementById(identity + "Card").style.backgroundColor = App.TwinTeal;
-                        document.getElementById(identity + "Card").style.animation = "blink 1500ms";
-                        document.getElementById(identity + "Card").style.animationDelay = "500ms";
-                        document.getElementById(identity + "Card").style.animationIterationCount = "3";
+                        document.getElementById(identity + "Card").style.animation = "blink 250ms";
+                        document.getElementById(identity + "Card").style.animationDelay = "0ms";
+                        document.getElementById(identity + "Card").style.animationIterationCount = "6";
                     }
                     else {
                         this.changeAnswerColors(identity, color);
@@ -313,7 +332,8 @@ var App;
                                         },
                                         ticks: {
                                             fontSize: 24,
-                                            fontFamily: App.TwinFont
+                                            fontFamily: App.TwinFont,
+                                            fontColor: "white"
                                         }
                                     }],
                                 yAxes: [{
@@ -463,7 +483,8 @@ var App;
                     var yAlignment = 0;
                     context.fillStyle = "white";
                     context.strokeStyle = 'black';
-                    context.lineWidth = 1.5;
+                    context.lineWidth = 5;
+                    context.lineJoin = 'round';
                     // lower the font size until the text fits the canvas
                     do {
                         fontsize--;
@@ -479,8 +500,8 @@ var App;
                     // draw the text
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     context.textAlign = "center";
-                    context.fillText(text, (canvas.width / 2), (canvas.height - boundary.top));
                     context.strokeText(text, (canvas.width / 2), (canvas.height - boundary.top));
+                    context.fillText(text, (canvas.width / 2), (canvas.height - boundary.top));
                 };
                 HomeIndexController.prototype.xAlign = function (cWidth, tWidth) {
                     return ((cWidth - tWidth) / 2);
@@ -494,13 +515,14 @@ var App;
                     var metrics = context.measureText(text);
                     context.fillStyle = "white";
                     context.strokeStyle = 'black';
-                    context.lineWidth = 1.5;
+                    context.lineWidth = 5;
+                    context.lineJoin = 'round';
                     if (metrics.width < canvas.width) {
                         y = ((canvas.height + metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) / 2);
                         context.clearRect(0, 0, canvas.width, canvas.height);
                         context.textAlign = "center";
-                        context.fillText(text, x, y);
                         context.strokeText(text, x, y);
+                        context.fillText(text, x, y);
                     }
                     else {
                         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -520,8 +542,8 @@ var App;
                             }
                         }
                         context.textAlign = "center";
-                        context.fillText(line, x, y);
                         context.strokeText(line, x, y);
+                        context.fillText(line, x, y);
                     }
                 };
                 HomeIndexController.prototype.flip = function (identity, isAnswer) {
@@ -551,6 +573,14 @@ var App;
                     var k = document.getElementById(identity);
                     k.style.transform = "rotatex(" + amount + "deg)";
                     k.style.transitionDuration = "0.5s";
+                };
+                HomeIndexController.prototype.addProgress = function () {
+                    this.$scope.progressBar += this.$scope.progressAddRemove;
+                    this.$scope.progressAddRemove = 0;
+                };
+                HomeIndexController.prototype.removeProgress = function () {
+                    this.$scope.progressBar -= this.$scope.progressAddRemove;
+                    this.$scope.progressAddRemove = 0;
                 };
                 HomeIndexController.$inject = [
                     '$scope',

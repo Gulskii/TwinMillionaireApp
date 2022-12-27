@@ -1,5 +1,6 @@
 :root {
     --twinGold: #cfac48;
+    --twinYellow: #d0ba05;
     --twinTeal: #00e7ff;
     --twinRed: #9b0009;
     --twinGreen: #00FF00;
@@ -62,7 +63,7 @@ body {
     position: absolute;
     left: 200px;
     top: 320px;
-    border: 3px solid #d3d3d3;
+    border: 5px solid black;
     border-radius: 25px
 }
 
@@ -86,7 +87,7 @@ body {
 
 .answer {
     position: absolute;
-    border: 3px solid #d3d3d3;   
+    border: 5px solid black;   
 }
 
 .answer-left {
@@ -198,11 +199,43 @@ body {
 .clock {
     border-radius: 125px;
     position: absolute;
-    border: 3px solid #d3d3d3;
+    border: 5px solid black;
     left: 687px;
     top: 514px;
 }
 
 body{
     background-color:navy;
+}
+
+.progress-segments {
+    position:absolute;
+    left: 1400px;
+    top: 100px;
+}
+
+.progress-segment {    
+    border: 5px solid black;
+    border-radius: 25px;
+    text-align: center;
+    width: 300px;
+    font-family: var(--twinFont);
+}
+.progress-status-inactive {
+    background-color: var(--twinGold);
+}
+.progress-status-current {
+    background-color: var(--twinTeal);
+    animation: blink 2s;
+    animation-iteration-count: infinite;
+}
+.progress-status-pass {
+    background-color: var(--twinGreen);
+}
+.progress-status-fail {
+    background-color: var(--twinRed);
+}
+
+.pointer{
+    cursor: pointer;
 }

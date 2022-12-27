@@ -7,10 +7,19 @@ var App;
         var Index;
         (function (Index) {
             "use strict";
-            angular.module('homeIndexApp', [])
+            angular.module('homeIndexApp', ['sharedProgressSegmentsApp', 'ui.bootstrap'])
                 .controller('homeIndexController', Index.HomeIndexController)
                 .service('dataService', Home.HomeDataService)
-                .value('baseUrl', $("#baseUrl").val());
+                .value('baseUrl', $("#baseUrl").val())
+                .directive('progressSegments', function () {
+                return {
+                    restrict: 'E',
+                    scope: {
+                        segments: '='
+                    },
+                    templateUrl: '/Shared/ProgressSegments'
+                };
+            });
         })(Index = Home.Index || (Home.Index = {}));
     })(Home = App.Home || (App.Home = {}));
 })(App || (App = {}));
