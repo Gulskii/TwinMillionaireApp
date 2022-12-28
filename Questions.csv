@@ -1,9 +1,0 @@
-Id,QuestionContent,FirstAnswer,SecondAnswer,ThirdAnswer,FourthAnswer,CorrectAnswer,DifficultyLevelTypeId,HasBeenUsed
-13,What's Twin's Dog's Name?,Buddy,Charles,Ben,Fifi,1,Easy,true
-12,Impossible 1,1,2,3,4,3,Impossible,false
-11,Impossible 2,Alpha,Beta,Gamma,Omega,1,Impossible,true
-10,Impossible 3,456,567,67,789,2,Impossible,true
-8,Impossible 4,rty,tyu,yui,uio,3,Impossible,false
-3,Impossible 5,1,2,3,4,1,Impossible,true
-2,Impossible 6,234,345,456,567,2,Impossible,false
-1,Impossible 7,yes 2,wrong 3,no 4,not it 5,4,Impossible,true
