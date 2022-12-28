@@ -9,6 +9,7 @@
     --twinLifeline3: #5681ff;
     --twinLifeline4: #3048ff;
     --twinFont: "Bebas-Regular";
+    --flipDuration: 1000ms;
 }
 
 @font-face {
@@ -17,26 +18,26 @@
 }
 
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .padding-bottom-5 {
@@ -81,21 +82,21 @@ body {
     background-color: var(--twinGold);
 }
 
-.answer-back{
+.answer-back {
     background-color: var(--twinTeal);
 }
 
 .answer {
     position: absolute;
-    border: 5px solid black;   
+    border: 5px solid black;
 }
 
 .answer-left {
-    border-radius: 25px 0px 0px 25px;   
+    border-radius: 25px 0px 0px 25px;
 }
 
 .answer-right {
-    border-radius: 0px 25px 25px 0px;    
+    border-radius: 0px 25px 25px 0px;
 }
 
 .answer-text-a {
@@ -179,7 +180,7 @@ body {
 }
 
 .answer-front {
-    background-color: var(--twinGold);    
+    background-color: var(--twinGold);
 }
 
 @keyframes blink {
@@ -204,38 +205,91 @@ body {
     top: 514px;
 }
 
-body{
-    background-color:navy;
+body {
+    background-color: navy;
 }
 
 .progress-segments {
-    position:absolute;
+    position: absolute;
     left: 1400px;
     top: 75px;
 }
 
-.progress-segment {    
+.progress-segment {
     border: 5px solid black;
     border-radius: 25px;
     text-align: center;
     width: 500px;
     font-family: var(--twinFont);
 }
+
 .progress-status-inactive {
     background-color: var(--twinGold);
 }
+
 .progress-status-current {
     background-color: var(--twinTeal);
+}
+
+.progress-status-current-animate {
     animation: blink 2s;
     animation-iteration-count: infinite;
 }
+
 .progress-status-pass {
     background-color: var(--twinGreen);
 }
+
 .progress-status-fail {
     background-color: var(--twinRed);
 }
 
-.pointer{
+.progress-segment-flip {
+    animation: flipSegment var(--flipDuration);
+    animation-iteration-count: 1;
+    animation-play-state: running;
+}
+
+@keyframes flipSegment {
+    0% {
+        transform: rotateX(0deg);
+    }
+
+    50% {
+        transform: rotateX(90deg);
+    }
+
+    100% {
+        transform: rotateX(0deg);
+    }
+}
+
+.pointer {
     cursor: pointer;
+}
+
+.twin-progress-bar {
+    height: 57px;
+    width: 714px;
+}
+
+.twin-progress-bar-text-left {
+    position: absolute;
+    top: 8px;
+    left: 7px;
+    font-family: var(--twinFont);
+}
+
+.twin-progress-bar-text-right {
+    position: absolute;
+    top: 8px;
+    left: 649px;
+    font-family: var(--twinFont);
+}
+
+.twin-progress-bar-section {
+    position: absolute;
+    top: 700px;
+    left: 200px;
+    width: 1130px;
 }

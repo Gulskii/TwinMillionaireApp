@@ -21,5 +21,8 @@ var App;
         .getPropertyValue("--twinLifeline3");
     App.TwinLifeline4 = getComputedStyle(document.documentElement)
         .getPropertyValue("--twinLifeline4");
+    var FlipDurationString = getComputedStyle(document.documentElement)
+        .getPropertyValue("--flipDuration");
+    App.FlipDuration = parseInt(FlipDurationString.substring(0, FlipDurationString.length - 2));
 })(App || (App = {}));
 //# sourceMappingURL=shared.js.map

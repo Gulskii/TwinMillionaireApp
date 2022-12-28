@@ -31,7 +31,11 @@ var App;
                         'resumeClock': this.resumeClock,
                         'clearClock': this.clearClock,
                         'showAudienceAnswersGraph': this.showAudienceAnswersGraph,
-                        'hideAudienceAnswersGraph': this.hideAudienceAnswersGraph
+                        'hideAudienceAnswersGraph': this.hideAudienceAnswersGraph,
+                        'addProgress': this.addProgress,
+                        'removeProgress': this.removeProgress,
+                        'setCurrentSegment': this.setCurrentSegment,
+                        'clearSegments': this.clearSegments,
                     };
                     this.revealCount = 0;
                     this.$scope.chosenQuestion = {};
@@ -66,7 +70,8 @@ var App;
                     while (count <= this.numberOfQuestions) {
                         var ps = {
                             text: "Question " + count,
-                            progressStatus: 1 /* ProgressStatus.Inactive */
+                            progressStatus: 1 /* ProgressStatus.Inactive */,
+                            sequence: count,
                         };
                         this.$scope.progressSegments.unshift(ps);
                         count++;
@@ -574,13 +579,30 @@ var App;
                     k.style.transform = "rotatex(" + amount + "deg)";
                     k.style.transitionDuration = "0.5s";
                 };
-                HomeIndexController.prototype.addProgress = function () {
-                    this.$scope.progressBar += this.$scope.progressAddRemove;
-                    this.$scope.progressAddRemove = 0;
+                HomeIndexController.prototype.addProgress = function (ctrl, data) {
+                    ctrl.$scope.progressBar += data;
+                    ctrl.$scope.$applyAsync();
                 };
-                HomeIndexController.prototype.removeProgress = function () {
-                    this.$scope.progressBar -= this.$scope.progressAddRemove;
-                    this.$scope.progressAddRemove = 0;
+                HomeIndexController.prototype.removeProgress = function (ctrl, data) {
+                    ctrl.$scope.progressBar -= data;
+                    ctrl.$scope.$applyAsync();
+                };
+                HomeIndexController.prototype.setCurrentSegment = function (ctrl, currentSegment) {
+                    $.each(ctrl.$scope.progressSegments, function (i, v) {
+                        if (v.sequence < currentSegment)
+                            v.progressStatus = 3 /* ProgressStatus.Pass */;
+                        else if (v.sequence === currentSegment)
+                            v.progressStatus = 2 /* ProgressStatus.Current */;
+                        else
+                            v.progressStatus = 1 /* ProgressStatus.Inactive */;
+                    });
+                    ctrl.$scope.$applyAsync();
+                };
+                HomeIndexController.prototype.clearSegments = function (ctrl, data) {
+                    $.each(ctrl.$scope.progressSegments, function (i, v) {
+                        v.progressStatus = 1 /* ProgressStatus.Inactive */;
+                    });
+                    ctrl.$scope.$applyAsync();
                 };
                 HomeIndexController.$inject = [
                     '$scope',

@@ -34,6 +34,8 @@ var App;
                     this.currentTimerState = 1 /* TimerState.Clear */;
                     this.currentRoundState = 1 /* RoundState.Start */;
                     this.$scope.clockSetTime = 20;
+                    this.$scope.progressAddRemove = 0;
+                    this.$scope.currentProgressSegment = 0;
                     this.$scope.ctrl = this;
                     this.clearNewQuestion();
                     this.getQuestions();
@@ -264,6 +266,26 @@ var App;
                 HomeRemoteController.prototype.hideAudienceAnswersGraph = function () {
                     var webSocketCall = this.socketClient.createWebSocketCall("hideAudienceAnswersGraph", null);
                     this.socket.send(JSON.stringify(webSocketCall));
+                };
+                HomeRemoteController.prototype.addProgress = function () {
+                    var webSocketCall = this.socketClient.createWebSocketCall("addProgress", this.$scope.progressAddRemove);
+                    this.socket.send(JSON.stringify(webSocketCall));
+                    this.$scope.progressAddRemove = 0;
+                };
+                HomeRemoteController.prototype.removeProgress = function () {
+                    var webSocketCall = this.socketClient.createWebSocketCall("removeProgress", this.$scope.progressAddRemove);
+                    this.socket.send(JSON.stringify(webSocketCall));
+                    this.$scope.progressAddRemove = 0;
+                };
+                HomeRemoteController.prototype.setCurrentSegment = function () {
+                    var webSocketCall = this.socketClient.createWebSocketCall("setCurrentSegment", this.$scope.currentProgressSegment);
+                    this.socket.send(JSON.stringify(webSocketCall));
+                    this.$scope.progressAddRemove = 0;
+                };
+                HomeRemoteController.prototype.clearSegments = function () {
+                    var webSocketCall = this.socketClient.createWebSocketCall("clearSegments", null);
+                    this.socket.send(JSON.stringify(webSocketCall));
+                    this.$scope.progressAddRemove = 0;
                 };
                 HomeRemoteController.$inject = [
                     '$scope',

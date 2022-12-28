@@ -29,12 +29,6 @@ var App;
                             this.$scope.segment.progressStatus = 1;
                         }
                     };
-                    SharedProgressSegmentsProgressSegmentController.prototype.showCheck = function () {
-                        return this.$scope.segment.progressStatus === 3 /* ProgressStatus.Pass */;
-                    };
-                    SharedProgressSegmentsProgressSegmentController.prototype.showX = function () {
-                        return this.$scope.segment.progressStatus === 4 /* ProgressStatus.Fail */;
-                    };
                     SharedProgressSegmentsProgressSegmentController.$inject = [
                         '$scope',
                         '$filter',
