@@ -211,14 +211,14 @@ body{
 .progress-segments {
     position:absolute;
     left: 1400px;
-    top: 100px;
+    top: 75px;
 }
 
 .progress-segment {    
     border: 5px solid black;
     border-radius: 25px;
     text-align: center;
-    width: 300px;
+    width: 500px;
     font-family: var(--twinFont);
 }
 .progress-status-inactive {

@@ -57,7 +57,7 @@ var App;
                     this.$scope.progressBar = 0;
                     this.$scope.progressBarMax = 200;
                     this.$scope.progressAddRemove = 0;
-                    this.numberOfQuestions = 15;
+                    this.numberOfQuestions = 20;
                     this.generateProgressSegments();
                 }
                 HomeIndexController.prototype.generateProgressSegments = function () {
