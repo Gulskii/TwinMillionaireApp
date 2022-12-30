@@ -7,7 +7,7 @@ var App;
         var Index;
         (function (Index) {
             "use strict";
-            angular.module('homeIndexApp', ['sharedProgressSegmentsApp', 'ui.bootstrap'])
+            angular.module('homeIndexApp', ['sharedProgressSegmentsApp', 'sharedAnswersApp', 'sharedQuestionApp', 'ui.bootstrap'])
                 .controller('homeIndexController', Index.HomeIndexController)
                 .service('dataService', Home.HomeDataService)
                 .value('baseUrl', $("#baseUrl").val())
@@ -19,7 +19,39 @@ var App;
                     },
                     templateUrl: '/Shared/ProgressSegments'
                 };
-            });
+            })
+                .directive('answers', function () {
+                return {
+                    restrict: 'E',
+                    scope: {
+                        answers: '='
+                    },
+                    templateUrl: '/Shared/Answers'
+                };
+            })
+                .directive("iconDisplay", iconDisplay);
+            function iconDisplay() {
+                var directive = {
+                    link: link,
+                    restrict: 'A'
+                };
+                return directive;
+                function link(scope, element, attrs) {
+                    scope.$watch('showIcon', function (newValue, oldValue, scope) {
+                        showIcon(element, newValue);
+                    }, true);
+                }
+            }
+            function showIcon(element, show) {
+                element.removeClass('logo-disappear');
+                element.removeClass('logo-appear');
+                if (!show) {
+                    element.addClass('logo-disappear');
+                }
+                else {
+                    element.addClass('logo-appear');
+                }
+            }
         })(Index = Home.Index || (Home.Index = {}));
     })(Home = App.Home || (App.Home = {}));
 })(App || (App = {}));

@@ -41,29 +41,63 @@ var App;
                     this.$scope.chosenQuestion = {};
                     this.$scope.audienceAnswers = [];
                     this.socketClient = new App.WebSocketClient(this.magicWand, this);
-                    $("#QuestionFlipped").val("false");
-                    $("#AnswerAFlipped").val("false");
-                    $("#AnswerBFlipped").val("false");
-                    $("#AnswerCFlipped").val("false");
-                    $("#AnswerDFlipped").val("false");
                     this.$scope.accessToken = $("#accessToken").val();
                     this.$scope.ctrl = this;
                     var ctrl = this;
                     this.showAudienceAnswers = false;
                     this.audienceAnswersGraph = null;
+                    this.$scope.showIcon = true;
                     this.socket = this.socketClient.createSocket(this.baseUrl);
-                    this.drawInitialQuestion("Question");
-                    $timeout(function () {
-                        ctrl.drawAnswers();
-                    }, 500);
                     this.timer = new App.Timer(this.$q, "timer", "timerOutline");
                     this.$scope.progressSegments = [];
+                    this.$scope.answers = [];
+                    this.initialDisplayQuestion();
+                    this.initialAnswers();
                     this.$scope.progressBar = 0;
                     this.$scope.progressBarMax = 200;
                     this.$scope.progressAddRemove = 0;
                     this.numberOfQuestions = 20;
                     this.generateProgressSegments();
                 }
+                HomeIndexController.prototype.initialDisplayQuestion = function () {
+                    this.$scope.displayQuestion = {
+                        text: "This is a super long question for twin to test the multi line system I am expecting a second line to pop up and then a third after this one to round it up",
+                        flipped: false,
+                        showQuestionText: false
+                    };
+                };
+                HomeIndexController.prototype.initialAnswers = function () {
+                    this.$scope.answers = [
+                        {
+                            text: "The Emancipation Proclamation",
+                            flipped: false,
+                            answerStatus: 1 /* AnswerStatus.Normal */,
+                            sequence: 1,
+                            showAnswerText: false
+                        },
+                        {
+                            text: "Answer 2",
+                            flipped: false,
+                            answerStatus: 1 /* AnswerStatus.Normal */,
+                            sequence: 2,
+                            showAnswerText: false
+                        },
+                        {
+                            text: "Answer 3",
+                            flipped: false,
+                            answerStatus: 1 /* AnswerStatus.Normal */,
+                            sequence: 3,
+                            showAnswerText: false
+                        },
+                        {
+                            text: "Answer 4",
+                            flipped: false,
+                            answerStatus: 1 /* AnswerStatus.Normal */,
+                            sequence: 4,
+                            showAnswerText: false
+                        }
+                    ];
+                };
                 HomeIndexController.prototype.generateProgressSegments = function () {
                     var count = 1;
                     this.$scope.progressSegments = [];
@@ -85,13 +119,16 @@ var App;
                     console.log("loadChosenQuestion");
                     console.log(data);
                     ctrl.hideAllPanels();
+                    ctrl.$scope.showIcon = true;
                     setTimeout(function () {
+                        ctrl.clearClock(ctrl, null);
                         ctrl.$scope.chosenQuestion = data;
-                        ctrl.writeQuestion("Question", data.questionContent);
-                        ctrl.writeAnswer("AnswerA", data.firstAnswer);
-                        ctrl.writeAnswer("AnswerB", data.secondAnswer);
-                        ctrl.writeAnswer("AnswerC", data.thirdAnswer);
-                        ctrl.writeAnswer("AnswerD", data.fourthAnswer);
+                        ctrl.writeQuestion(data.questionContent);
+                        ctrl.writeAnswer(data.firstAnswer, 0);
+                        ctrl.writeAnswer(data.secondAnswer, 1);
+                        ctrl.writeAnswer(data.thirdAnswer, 2);
+                        ctrl.writeAnswer(data.fourthAnswer, 3);
+                        ctrl.$scope.$applyAsync();
                     }, 500);
                 };
                 HomeIndexController.prototype.revealQuestionText = function (ctrl, data) {
@@ -100,19 +137,19 @@ var App;
                 HomeIndexController.prototype.flipNextPanel = function (ctrl, data) {
                     switch (ctrl.revealCount) {
                         case 0:
-                            ctrl.flip("Question", false);
+                            ctrl.$scope.displayQuestion.flipped = !ctrl.$scope.displayQuestion.flipped;
                             break;
                         case 1:
-                            ctrl.flip("AnswerA", true);
+                            ctrl.$scope.answers[0].flipped = !ctrl.$scope.answers[0].flipped;
                             break;
                         case 2:
-                            ctrl.flip("AnswerB", true);
+                            ctrl.$scope.answers[1].flipped = !ctrl.$scope.answers[1].flipped;
                             break;
                         case 3:
-                            ctrl.flip("AnswerC", true);
+                            ctrl.$scope.answers[2].flipped = !ctrl.$scope.answers[2].flipped;
                             break;
                         case 4:
-                            ctrl.flip("AnswerD", true);
+                            ctrl.$scope.answers[3].flipped = !ctrl.$scope.answers[3].flipped;
                             break;
                     }
                     if (ctrl.revealCount === 4)
@@ -120,137 +157,65 @@ var App;
                     else
                         ctrl.revealCount++;
                     console.log("flipNextPanel");
+                    ctrl.$scope.$applyAsync();
                 };
                 HomeIndexController.prototype.confirmAnswer = function (ctrl, data) {
                     console.log("confirmAnswer" + data);
                     ctrl.playerChoice = data;
                     ctrl.changeAllAnswerColors();
-                    switch (data) {
-                        case 1: {
-                            ctrl.changeAnswerColors("AnswerA", App.TwinTeal);
-                            break;
-                        }
-                        case 2: {
-                            ctrl.changeAnswerColors("AnswerB", App.TwinTeal);
-                            break;
-                        }
-                        case 3: {
-                            ctrl.changeAnswerColors("AnswerC", App.TwinTeal);
-                            break;
-                        }
-                        case 4: {
-                            ctrl.changeAnswerColors("AnswerD", App.TwinTeal);
-                            break;
-                        }
-                        default:
-                            break;
-                    }
+                    ctrl.$scope.answers[data - 1].answerStatus = 4 /* AnswerStatus.Guess */;
+                    ctrl.$scope.showIcon = true;
+                    ctrl.$scope.$applyAsync();
                     ctrl.timer.clearTimer();
                 };
                 HomeIndexController.prototype.revealAnswer = function (ctrl, data) {
-                    console.log("revealAnswer" + data);
                     ctrl.changeAllAnswerColors();
                     var isCorrect = (ctrl.playerChoice === ctrl.$scope.chosenQuestion.correctAnswer);
-                    var color = App.TwinTeal;
                     if (isCorrect) {
-                        color = App.TwinGreen;
-                    }
-                    switch (ctrl.$scope.chosenQuestion.correctAnswer) {
-                        case 1: {
-                            ctrl.turnOnCorrectAnswerLoop("AnswerA", color, isCorrect);
-                            break;
-                        }
-                        case 2: {
-                            ctrl.turnOnCorrectAnswerLoop("AnswerB", color, isCorrect);
-                            break;
-                        }
-                        case 3: {
-                            ctrl.turnOnCorrectAnswerLoop("AnswerC", color, isCorrect);
-                            break;
-                        }
-                        case 4: {
-                            ctrl.turnOnCorrectAnswerLoop("AnswerD", color, isCorrect);
-                            break;
-                        }
-                        default:
-                            break;
-                    }
-                    if (!isCorrect) {
-                        switch (ctrl.playerChoice) {
-                            case 1: {
-                                ctrl.changeAnswerColors("AnswerA", App.TwinRed);
-                                break;
-                            }
-                            case 2: {
-                                ctrl.changeAnswerColors("AnswerB", App.TwinRed);
-                                break;
-                            }
-                            case 3: {
-                                ctrl.changeAnswerColors("AnswerC", App.TwinRed);
-                                break;
-                            }
-                            case 4: {
-                                ctrl.changeAnswerColors("AnswerD", App.TwinRed);
-                                break;
-                            }
-                            default:
-                                break;
-                        }
-                    }
-                };
-                HomeIndexController.prototype.hideAllPanels = function () {
-                    this.flipAllPanelsBack();
-                    this.changeAllAnswerColors();
-                    this.revealCount = 0;
-                };
-                HomeIndexController.prototype.flipAllPanelsBack = function () {
-                    $("#QuestionFlipped").val("true");
-                    $("#AnswerAFlipped").val("true");
-                    $("#AnswerBFlipped").val("true");
-                    $("#AnswerCFlipped").val("true");
-                    $("#AnswerDFlipped").val("true");
-                    this.flip("Question", false);
-                    this.flip("AnswerA", true);
-                    this.flip("AnswerB", true);
-                    this.flip("AnswerC", true);
-                    this.flip("AnswerD", true);
-                };
-                HomeIndexController.prototype.changeAnswerColors = function (identity, color) {
-                    document.getElementById(identity + "Card").style.backgroundColor = color;
-                };
-                HomeIndexController.prototype.turnOnCorrectAnswerLoop = function (identity, color, isCorrect) {
-                    if (!isCorrect) {
-                        var el = $("#" + identity + "Card");
-                        el.before(el.clone(true)).remove();
-                        this.drawAnwserCardFront(identity, false);
-                        document.getElementById(identity + "Card").style.backgroundColor = App.TwinTeal;
-                        document.getElementById(identity + "Card").style.animation = "blink 250ms";
-                        document.getElementById(identity + "Card").style.animationDelay = "0ms";
-                        document.getElementById(identity + "Card").style.animationIterationCount = "6";
+                        ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 2 /* AnswerStatus.Correct */;
+                        var doot = new Audio("../sounds/correct answer.mp3");
+                        doot.play();
                     }
                     else {
-                        this.changeAnswerColors(identity, color);
+                        if (ctrl.playerChoice !== null)
+                            ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 3 /* AnswerStatus.Incorrect */;
+                        ctrl.$scope.answers[ctrl.$scope.chosenQuestion.correctAnswer - 1].answerStatus = 5 /* AnswerStatus.Actual */;
+                        var doot = new Audio("../sounds/wrong answer.mp3");
+                        doot.play();
                     }
+                    ctrl.$scope.$applyAsync();
+                };
+                HomeIndexController.prototype.hideAllPanels = function () {
+                    this.revealCount = 0;
+                    this.$scope.displayQuestion.flipped = false;
+                    $.each(this.$scope.answers, function (i, v) {
+                        v.flipped = false;
+                    });
+                    this.$scope.$applyAsync();
                 };
                 HomeIndexController.prototype.changeAllAnswerColors = function () {
-                    this.changeAnswerColors("AnswerA", App.TwinGold);
-                    this.changeAnswerColors("AnswerB", App.TwinGold);
-                    this.changeAnswerColors("AnswerC", App.TwinGold);
-                    this.changeAnswerColors("AnswerD", App.TwinGold);
+                    $.each(this.$scope.answers, function (i, v) {
+                        v.answerStatus = 1 /* AnswerStatus.Normal */;
+                    });
+                    this.$scope.$applyAsync();
                 };
                 HomeIndexController.prototype.revealCorrectAnswer = function (ctrl, data) {
                     ctrl.revealAnswer(ctrl, data);
                 };
                 HomeIndexController.prototype.startClock = function (ctrl, data) {
                     console.log("startClock");
+                    ctrl.$scope.showIcon = false;
                     ctrl.timer.startTimer(data).then(function (result) {
                         if (result === true) {
                             var webSocketCall = ctrl.socketClient.createWebSocketCall("timeUp", null);
                             ctrl.socket.send(JSON.stringify(webSocketCall));
+                            ctrl.$scope.showIcon = true;
+                            ctrl.$scope.$applyAsync();
                         }
                     }).catch(function (error) {
                         console.log(error);
                     });
+                    ctrl.$scope.$applyAsync();
                 };
                 HomeIndexController.prototype.resumeClock = function (ctrl, data) {
                     console.log("resumeClock");
@@ -366,218 +331,12 @@ var App;
                         }
                     });
                 };
-                HomeIndexController.prototype.drawQuestionText = function (identity, text) {
-                    var canvas = document.getElementById(identity + 'Text');
-                    var context = canvas.getContext("2d");
-                    context.font = "32px " + App.TwinFont;
-                    this.wrapText(canvas, 0, context, text, (canvas.width / 2), 32, canvas.width, 32);
-                    canvas.style.transform = "rotatex(" + 90 + "deg)";
+                HomeIndexController.prototype.writeQuestion = function (question) {
+                    this.$scope.displayQuestion.text = question;
                 };
-                HomeIndexController.prototype.drawInitialQuestion = function (identity) {
-                    var text = "";
-                    //text = "This is a small question that will not trigger the wrap question for the game";
-                    //text = "This is a medium sized question that will trigger the wrap question for the game because I said so";
-                    text = "This is a large sized question that will trigger the wrap question for the game hopefully this will be enough space for Twin but we will see what has to be done. This is a third line I added just because";
-                    //var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed maximus dui a commodo feugiat. Proin ante elit, tristique et orci non, pellentesque iaculis lorem. Ut non est nec nunc mollis accumsan. Aliquam et molestie magna. Integer gravida ipsum at quam mattis, et ultrices magna ullamcorper. Nulla non sapien augue. Integer dignissim pretium libero sit amet ornare.";
-                    this.drawQuestionText(identity, text);
-                    this.drawQuestionCardFront(identity);
-                    this.drawQuestionBack(identity);
-                };
-                HomeIndexController.prototype.drawQuestionCardFront = function (identity) {
-                    var ctrl = this;
-                    var canvas = document.getElementById(identity + 'Card');
-                    var context = canvas.getContext("2d");
-                    canvas.style.transform = "rotatex(" + 90 + "deg)";
-                };
-                HomeIndexController.prototype.drawQuestionBack = function (identity) {
-                    var ctrl = this;
-                    var canvas = document.getElementById(identity + 'Back');
-                    var context = canvas.getContext("2d");
-                };
-                HomeIndexController.prototype.drawAnswers = function () {
-                    this.drawInitialAnswer("AnswerA", "A)");
-                    this.drawInitialAnswer("AnswerB", "B)");
-                    this.drawInitialAnswer("AnswerC", "C)");
-                    this.drawInitialAnswer("AnswerD", "D)");
-                };
-                HomeIndexController.prototype.drawInitialAnswer = function (identity, choiceText) {
-                    this.drawAnswerText(identity, "");
-                    this.drawAnwserCardFront(identity, true);
-                    this.drawAnswerChoice(identity, choiceText);
-                    this.drawAnwserBack(identity);
-                };
-                HomeIndexController.prototype.drawAnswerText = function (identity, answer) {
-                    var ctrl = this;
-                    var canvas = document.getElementById(identity + 'Text');
-                    var context = canvas.getContext("2d");
-                    this.fitTextOnCanvas(canvas, context, 0, 0, answer, App.TwinFont);
-                    canvas.style.transform = "rotatex(" + 90 + "deg)";
-                };
-                HomeIndexController.prototype.drawAnwserCardFront = function (identity, flip) {
-                    var ctrl = this;
-                    var canvas = document.getElementById(identity + 'Card');
-                    var context = canvas.getContext("2d");
-                    this.drawAnswerTemplate(context);
-                    if (flip) {
-                        canvas.style.transform = "rotatex(" + 90 + "deg)";
-                    }
-                };
-                HomeIndexController.prototype.drawAnswerChoice = function (identity, text) {
-                    var ctrl = this;
-                    var canvas = document.getElementById(identity + 'Choice');
-                    var context = canvas.getContext("2d");
-                    this.fitTextOnCanvas(canvas, context, 0, 0, text, App.TwinFont);
-                    canvas.style.transform = "rotatex(" + 90 + "deg)";
-                };
-                HomeIndexController.prototype.drawAnwserBack = function (identity) {
-                    var ctrl = this;
-                    var canvas = document.getElementById(identity + 'Back');
-                    var context = canvas.getContext("2d");
-                };
-                HomeIndexController.prototype.drawAnswerTemplate = function (context) {
-                    context.beginPath();
-                    context.moveTo(92, 0);
-                    context.lineTo(92, 75);
-                    context.strokeStyle = '#d3d3d3';
-                    context.stroke();
-                };
-                HomeIndexController.prototype.drawRightAnswerTemplate = function (context) {
-                    context.beginPath();
-                    context.moveTo(365, 0);
-                    context.lineTo(365, 75);
-                    context.strokeStyle = '#d3d3d3';
-                    context.stroke();
-                };
-                HomeIndexController.prototype.writeQuestion = function (identity, question) {
-                    var canvas = document.getElementById(identity + "Text");
-                    var context = canvas.getContext("2d");
-                    var text = question;
-                    this.wrapText(canvas, 0, context, text, (canvas.width / 2), 32, canvas.width, 30);
-                };
-                HomeIndexController.prototype.writeAnswer = function (identity, answer) {
-                    var canvas = document.getElementById(identity + 'Text');
-                    var context = canvas.getContext("2d");
-                    var text = answer;
-                    this.fitTextOnCanvas(canvas, context, 0, 0, text, App.TwinFont);
-                };
-                HomeIndexController.prototype.bounds = function (x, y, context, text) {
-                    var metrics = context.measureText(text);
-                    return {
-                        top: y - metrics.actualBoundingBoxAscent,
-                        right: x + metrics.actualBoundingBoxRight,
-                        bottom: y + metrics.actualBoundingBoxDescent,
-                        left: x - metrics.actualBoundingBoxLeft
-                    };
-                };
-                HomeIndexController.prototype.textActualHeight = function (context, text) {
-                    return Math.abs(context.measureText(text).actualBoundingBoxDescent)
-                        + Math.abs(context.measureText(text).actualBoundingBoxAscent);
-                };
-                HomeIndexController.prototype.textActualWidth = function (context, text) {
-                    return Math.abs(context.measureText(text).actualBoundingBoxLeft)
-                        + Math.abs(context.measureText(text).actualBoundingBoxRight);
-                };
-                HomeIndexController.prototype.fitTextOnCanvas = function (canvas, context, paddingX, paddingY, text, fontface) {
-                    // start with a large font size
-                    var fontsize = 42;
-                    var xTotal = 0;
-                    var actualTextWidth = 0;
-                    var xAlignment = 0;
-                    var yTotal = 0;
-                    var actualTextHeight = 0;
-                    var yAlignment = 0;
-                    context.fillStyle = "white";
-                    context.strokeStyle = 'black';
-                    context.lineWidth = 5;
-                    context.lineJoin = 'round';
-                    // lower the font size until the text fits the canvas
-                    do {
-                        fontsize--;
-                        context.font = fontsize + "px " + fontface;
-                        actualTextWidth = this.textActualWidth(context, text);
-                        xAlignment = this.xAlign(canvas.width, actualTextWidth);
-                        xTotal = paddingX + actualTextWidth + xAlignment;
-                        actualTextHeight = this.textActualHeight(context, text);
-                        yAlignment = this.yAlign(canvas.height, actualTextHeight);
-                        yTotal = paddingY + actualTextHeight + yAlignment;
-                    } while ((xTotal > canvas.width) || (yTotal > canvas.height));
-                    var boundary = this.bounds((paddingX + xAlignment), (canvas.height - yAlignment - paddingY), context, text);
-                    // draw the text
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                    context.textAlign = "center";
-                    context.strokeText(text, (canvas.width / 2), (canvas.height - boundary.top));
-                    context.fillText(text, (canvas.width / 2), (canvas.height - boundary.top));
-                };
-                HomeIndexController.prototype.xAlign = function (cWidth, tWidth) {
-                    return ((cWidth - tWidth) / 2);
-                };
-                HomeIndexController.prototype.yAlign = function (cHeight, tHeight) {
-                    return ((cHeight - tHeight) / 2);
-                };
-                HomeIndexController.prototype.wrapText = function (canvas, padding, context, text, x, y, maxWidth, lineHeight) {
-                    var words = text.split(' ');
-                    var line = '';
-                    var metrics = context.measureText(text);
-                    context.fillStyle = "white";
-                    context.strokeStyle = 'black';
-                    context.lineWidth = 5;
-                    context.lineJoin = 'round';
-                    if (metrics.width < canvas.width) {
-                        y = ((canvas.height + metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) / 2);
-                        context.clearRect(0, 0, canvas.width, canvas.height);
-                        context.textAlign = "center";
-                        context.strokeText(text, x, y);
-                        context.fillText(text, x, y);
-                    }
-                    else {
-                        context.clearRect(0, 0, canvas.width, canvas.height);
-                        for (var n = 0; n < words.length; n++) {
-                            var testLine = line + words[n] + ' ';
-                            var metrics = context.measureText(testLine);
-                            var testWidth = metrics.width;
-                            if (testWidth > maxWidth && n > 0) {
-                                context.textAlign = "center";
-                                context.fillText(line, x, y);
-                                context.strokeText(line, x, y);
-                                line = words[n] + ' ';
-                                y += lineHeight;
-                            }
-                            else {
-                                line = testLine;
-                            }
-                        }
-                        context.textAlign = "center";
-                        context.strokeText(line, x, y);
-                        context.fillText(line, x, y);
-                    }
-                };
-                HomeIndexController.prototype.flip = function (identity, isAnswer) {
-                    var _this = this;
-                    if ($("#" + identity + "Flipped").val() === 'false') {
-                        $("#" + identity + "Flipped").val("true");
-                        this.flipPiece(identity + 'Back', 90);
-                        setTimeout(function () {
-                            _this.flipPiece(identity + 'Text', 0);
-                            _this.flipPiece(identity + 'Card', 0);
-                            if (isAnswer)
-                                _this.flipPiece(identity + 'Choice', 0);
-                        }, 500);
-                    }
-                    else {
-                        $("#" + identity + "Flipped").val("false");
-                        this.flipPiece(identity + 'Text', 90);
-                        this.flipPiece(identity + 'Card', 90);
-                        if (isAnswer)
-                            this.flipPiece(identity + 'Choice', 90);
-                        setTimeout(function () {
-                            _this.flipPiece(identity + 'Back', 0);
-                        }, 500);
-                    }
-                };
-                HomeIndexController.prototype.flipPiece = function (identity, amount) {
-                    var k = document.getElementById(identity);
-                    k.style.transform = "rotatex(" + amount + "deg)";
-                    k.style.transitionDuration = "0.5s";
+                HomeIndexController.prototype.writeAnswer = function (answer, index) {
+                    this.$scope.answers[index].text = answer;
+                    this.$scope.answers[index].answerStatus = 1 /* AnswerStatus.Normal */;
                 };
                 HomeIndexController.prototype.addProgress = function (ctrl, data) {
                     ctrl.$scope.progressBar += data;

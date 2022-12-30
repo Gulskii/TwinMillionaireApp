@@ -172,6 +172,7 @@ var App;
                     this.dataService.setQuestionAsUsed(this.$scope.chosenQuestion.id).then(function (results) {
                         _this.currentRoundState = 3 /* RoundState.QuestionAccepted */;
                         _this.getQuestions();
+                        _this.flipCount = 0;
                     });
                 };
                 HomeRemoteController.prototype.showAcceptQuestion = function () {

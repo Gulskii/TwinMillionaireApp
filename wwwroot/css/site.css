@@ -60,18 +60,31 @@ body {
     padding: 0 0 0 0 !important;
 }
 
-.question-card {
+.question-section {
     position: absolute;
-    left: 200px;
-    top: 320px;
+    top: 310px;
+    left: 190px;
+}
+
+.question {
+    position: absolute;
     border: 5px solid black;
-    border-radius: 25px
+    border-radius: 25px;
+    width: 1125px;
+    height: 150px;
+    font-family: var(--twinFont);
 }
 
 .question-text {
     position: absolute;
-    left: 220px;
-    top: 340px;
+    left: 12px;
+    top: 12px;   
+}
+
+.question-flip {
+    animation: flipSegment 1000ms;
+    animation-iteration-count: 1;
+    animation-play-state: running;
 }
 
 .question-back {
@@ -82,21 +95,83 @@ body {
     background-color: var(--twinGold);
 }
 
-.answer-back {
-    background-color: var(--twinTeal);
+.answers-section {
+    position: absolute;
+    top: 500px;
+    left: 200px;
 }
 
 .answer {
     position: absolute;
     border: 5px solid black;
+    width: 450px;
+    height: 75px;
+    font-family: var(--twinFont);
+    transition: background-color var(--flipDuration);
+}
+
+.answer-back {
+    background-color: var(--twinTeal);
 }
 
 .answer-left {
+    left: 0px;
     border-radius: 25px 0px 0px 25px;
 }
 
 .answer-right {
+    left: 680px;
     border-radius: 0px 25px 25px 0px;
+}
+
+.answer-top {
+    top: 0px;
+}
+
+.answer-bottom {
+    top: 100px;
+}
+
+.answer-text {
+    position: absolute;
+    top: 7px;
+    left: 90px;
+}
+
+.answer-choice {
+    position: absolute;
+    top: 7px;
+    left: 10px;
+    width: 45px;
+    height: 50px;
+}
+
+.answer-status-actual {
+    background-color: var(--twinTeal);
+}
+
+.answer-status-actual-blink {
+    animation: blink 250ms;
+    animation-iteration-count: 6;
+    animation-play-state: running;
+}
+
+.answer-status-correct {
+    background-color: var(--twinGreen);
+}
+
+.answer-status-incorrect {
+    background-color: var(--twinRed);
+}
+
+.answer-status-normal {
+    background-color: var(--twinGold);
+}
+
+.answer-flip {
+    animation: flipSegment 1000ms;
+    animation-iteration-count: 1;
+    animation-play-state: running;
 }
 
 .answer-text-a {
@@ -292,4 +367,41 @@ body {
     top: 700px;
     left: 200px;
     width: 1130px;
+}
+
+.logo {
+    position: absolute;
+    top: 526px;
+    left: 702px;
+    width:125px;
+    z-index: 2;
+    transition: opacity 1000ms;
+}
+
+.logo-disappear {    
+    opacity: 0;
+}
+
+.logo-appear {    
+    opacity: 1;
+}
+
+@keyframes disappear {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
