@@ -116,8 +116,6 @@ var App;
                     window.open("/Home/Remote", "newwindow", "width=800,height=800,left=150,top=200,toolbar=0,status=0,");
                 };
                 HomeIndexController.prototype.loadChosenQuestion = function (ctrl, data) {
-                    console.log("loadChosenQuestion");
-                    console.log(data);
                     ctrl.hideAllPanels();
                     ctrl.$scope.showIcon = true;
                     setTimeout(function () {
@@ -130,9 +128,6 @@ var App;
                         ctrl.writeAnswer(data.fourthAnswer, 3);
                         ctrl.$scope.$applyAsync();
                     }, 500);
-                };
-                HomeIndexController.prototype.revealQuestionText = function (ctrl, data) {
-                    console.log("revealQuestionText");
                 };
                 HomeIndexController.prototype.flipNextPanel = function (ctrl, data) {
                     switch (ctrl.revealCount) {
@@ -156,11 +151,9 @@ var App;
                         ctrl.revealCount = 0;
                     else
                         ctrl.revealCount++;
-                    console.log("flipNextPanel");
                     ctrl.$scope.$applyAsync();
                 };
                 HomeIndexController.prototype.confirmAnswer = function (ctrl, data) {
-                    console.log("confirmAnswer" + data);
                     ctrl.playerChoice = data;
                     ctrl.changeAllAnswerColors();
                     ctrl.$scope.answers[data - 1].answerStatus = 4 /* AnswerStatus.Guess */;
@@ -203,7 +196,6 @@ var App;
                     ctrl.revealAnswer(ctrl, data);
                 };
                 HomeIndexController.prototype.startClock = function (ctrl, data) {
-                    console.log("startClock");
                     ctrl.$scope.showIcon = false;
                     ctrl.timer.startTimer(data).then(function (result) {
                         if (result === true) {
@@ -218,19 +210,15 @@ var App;
                     ctrl.$scope.$applyAsync();
                 };
                 HomeIndexController.prototype.resumeClock = function (ctrl, data) {
-                    console.log("resumeClock");
                     ctrl.timer.resumeTimer();
                 };
                 HomeIndexController.prototype.stopClock = function (ctrl, data) {
-                    console.log("stopClock");
                     ctrl.timer.stopTimer();
                 };
                 HomeIndexController.prototype.clearClock = function (ctrl, data) {
-                    console.log("clearClock");
                     ctrl.timer.clearTimer();
                 };
                 HomeIndexController.prototype.showAudienceAnswersGraph = function (ctrl) {
-                    console.log("showAudienceAnswersGraph");
                     ctrl.dataService.getAudienceAnswers().then(function (results) {
                         ctrl.$scope.audienceAnswers = results;
                         ctrl.createAudienceAnswersGraph();
@@ -239,7 +227,6 @@ var App;
                     });
                 };
                 HomeIndexController.prototype.hideAudienceAnswersGraph = function (ctrl, data) {
-                    console.log("hideAudienceAnswersGraph");
                     ctrl.showAudienceAnswers = false;
                     ctrl.$scope.$applyAsync();
                 };
@@ -256,11 +243,6 @@ var App;
                     var canvas = document.getElementById("audienceAnswersGraph");
                     var ctx = canvas.getContext("2d");
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    var e = { id: "379260db-cc3f-4b2c-a0f8-fb827ff0a282", userName: "gulski", answerChosen: 1 };
-                    var ee = { id: "379260db-cc3f-4b2c-a0f8-fb827ff0a282", userName: "gulski", answerChosen: 2 };
-                    var eee = { id: "379260db-cc3f-4b2c-a0f8-fb827ff0a282", userName: "gulski", answerChosen: 2 };
-                    var eeee = { id: "379260db-cc3f-4b2c-a0f8-fb827ff0a282", userName: "gulski", answerChosen: 4 };
-                    this.$scope.audienceAnswers.push(e, ee, eee, eeee);
                     var a = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 1; }).length;
                     var b = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 2; }).length;
                     var c = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 3; }).length;

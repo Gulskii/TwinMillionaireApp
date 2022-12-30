@@ -43,12 +43,6 @@ var App;
                     SharedAnswersAnswerController.prototype.showAnswerText = function () {
                         return this.$scope.answer.showAnswerText;
                     };
-                    SharedAnswersAnswerController.prototype.setStatus = function () {
-                        this.$scope.segment.progressStatus++;
-                        if (this.$scope.segment.progressStatus > 4) {
-                            this.$scope.segment.progressStatus = 1;
-                        }
-                    };
                     SharedAnswersAnswerController.$inject = [
                         '$scope',
                         '$filter',

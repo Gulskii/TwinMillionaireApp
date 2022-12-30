@@ -21,12 +21,6 @@ var App;
                     this.$window = $window;
                     this.$scope.ctrl = this;
                 }
-                SharedAnswersController.prototype.setStatus = function () {
-                    this.$scope.segment.progressStatus++;
-                    if (this.$scope.segment.progressStatus > 4) {
-                        this.$scope.segment.progressStatus = 1;
-                    }
-                };
                 SharedAnswersController.$inject = [
                     '$scope',
                     '$filter',
