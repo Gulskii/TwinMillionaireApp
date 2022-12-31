@@ -45,6 +45,7 @@ var App;
                     this.getAccessToken();
                     this.socketClient = new App.WebSocketClient(this.magicWand, this);
                     this.socket = this.socketClient.createSocket(this.baseUrl);
+                    this.$scope.volume = 100;
                 }
                 HomeRemoteController.prototype.getAccessToken = function () {
                     var _this = this;
@@ -287,6 +288,13 @@ var App;
                     var webSocketCall = this.socketClient.createWebSocketCall("clearSegments", null);
                     this.socket.send(JSON.stringify(webSocketCall));
                     this.$scope.progressAddRemove = 0;
+                };
+                HomeRemoteController.prototype.setVolume = function () {
+                    var doot = new Audio("../sounds/wrong answer.mp3");
+                    doot.volume = (this.$scope.volume / 100);
+                    doot.play();
+                    var webSocketCall = this.socketClient.createWebSocketCall("setVolume", this.$scope.volume);
+                    this.socket.send(JSON.stringify(webSocketCall));
                 };
                 HomeRemoteController.$inject = [
                     '$scope',

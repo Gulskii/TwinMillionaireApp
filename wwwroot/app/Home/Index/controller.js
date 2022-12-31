@@ -36,6 +36,7 @@ var App;
                         'removeProgress': this.removeProgress,
                         'setCurrentSegment': this.setCurrentSegment,
                         'clearSegments': this.clearSegments,
+                        'setVolume': this.setVolume
                     };
                     this.revealCount = 0;
                     this.$scope.chosenQuestion = {};
@@ -167,6 +168,7 @@ var App;
                     if (isCorrect) {
                         ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 2 /* AnswerStatus.Correct */;
                         var doot = new Audio("../sounds/correct answer.mp3");
+                        doot.volume = (this.$scope.volume / 100);
                         doot.play();
                     }
                     else {
@@ -174,6 +176,7 @@ var App;
                             ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 3 /* AnswerStatus.Incorrect */;
                         ctrl.$scope.answers[ctrl.$scope.chosenQuestion.correctAnswer - 1].answerStatus = 5 /* AnswerStatus.Actual */;
                         var doot = new Audio("../sounds/wrong answer.mp3");
+                        doot.volume = (this.$scope.volume / 100);
                         doot.play();
                     }
                     ctrl.$scope.$applyAsync();
@@ -344,6 +347,9 @@ var App;
                         v.progressStatus = 1 /* ProgressStatus.Inactive */;
                     });
                     ctrl.$scope.$applyAsync();
+                };
+                HomeIndexController.prototype.setVolume = function (ctrl, data) {
+                    ctrl.$scope.volume = data;
                 };
                 HomeIndexController.$inject = [
                     '$scope',

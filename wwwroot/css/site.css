@@ -375,7 +375,7 @@ body {
     left: 702px;
     width:125px;
     z-index: 2;
-    transition: opacity 1000ms;
+    transition: opacity 500ms;
 }
 
 .logo-disappear {    
@@ -405,3 +405,27 @@ body {
         opacity: 1;
     }
 }
+
+.doot {
+    border: none;
+    height: 57px;
+    width: 714px;
+}
+
+progress {
+    color: lightblue;
+}
+
+    progress::-moz-progress-bar {
+        background: var(--twinTeal);
+        transition: width 500ms;
+    }
+
+    progress::-webkit-progress-value {
+        background: var(--twinTeal);
+        transition: width 500ms;
+    }
+
+    progress::-webkit-progress-bar {
+        background: white;
+    }
