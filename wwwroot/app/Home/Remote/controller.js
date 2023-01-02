@@ -23,7 +23,9 @@ var App;
                     this.dataService = dataService;
                     this.baseUrl = baseUrl;
                     this.magicWand = {
-                        'timeUp': this.timeUp
+                        'timeUp': this.timeUp,
+                        'chatBotPong': this.chatBotPong,
+                        'chatBotError': this.chatBotError,
                     };
                     this.flipCount = 0;
                     this.$scope.chosenQuestion = {};
@@ -46,7 +48,18 @@ var App;
                     this.socketClient = new App.WebSocketClient(this.magicWand, this);
                     this.socket = this.socketClient.createSocket(this.baseUrl);
                     this.$scope.volume = 100;
+                    this.$scope.chatBotStatus = 1 /* ChatBotStatus.Disconnected */;
+                    this.chatBotStatusMessage();
+                    this.pingChatBot();
                 }
+                HomeRemoteController.prototype.pingChatBot = function () {
+                    var ctrl = this;
+                    setInterval(function () {
+                        if (ctrl.chatBotIsConnected()) {
+                            ctrl.dataService.pingChatbot();
+                        }
+                    }, 300000);
+                };
                 HomeRemoteController.prototype.getAccessToken = function () {
                     var _this = this;
                     var href = window.location.href.substring(this.currentUri.length + 3);
@@ -116,7 +129,14 @@ var App;
                     });
                 };
                 HomeRemoteController.prototype.startChatbot = function () {
+                    var ctrl = this;
+                    this.$scope.chatBotStatus = 2 /* ChatBotStatus.Connecting */;
                     this.dataService.startChatbot().then(function (results) {
+                        //ongoing promise, only completes when chatbot closes properly
+                        if (ctrl.$scope.chatBotStatus !== 4 /* ChatBotStatus.Error */) {
+                            ctrl.$scope.chatBotStatus = 1 /* ChatBotStatus.Disconnected */;
+                            ctrl.chatBotStatusMessage();
+                        }
                     });
                 };
                 HomeRemoteController.prototype.stopChatbot = function () {
@@ -295,6 +315,59 @@ var App;
                     doot.play();
                     var webSocketCall = this.socketClient.createWebSocketCall("setVolume", this.$scope.volume);
                     this.socket.send(JSON.stringify(webSocketCall));
+                };
+                HomeRemoteController.prototype.chatBotPong = function (ctrl, data) {
+                    ctrl.$scope.chatBotStatus = 3 /* ChatBotStatus.Connected */;
+                    ctrl.chatBotStatusMessage();
+                    ctrl.$scope.chatBotLastPinged = new Date();
+                    ctrl.$scope.$applyAsync();
+                };
+                HomeRemoteController.prototype.chatBotError = function (ctrl, data) {
+                    ctrl.$scope.chatBotStatus = 4 /* ChatBotStatus.Error */;
+                    ctrl.chatBotStatusMessage();
+                    console.log(data);
+                    ctrl.$scope.$applyAsync();
+                };
+                HomeRemoteController.prototype.showStartChat = function () {
+                    return !this.isAccessTokenEmpty() && (this.chatBotIsDisconnected() || this.chatBotIsError());
+                };
+                HomeRemoteController.prototype.showStopChat = function () {
+                    return !this.isAccessTokenEmpty() && this.chatBotIsConnected();
+                };
+                HomeRemoteController.prototype.showTestMessageToChat = function () {
+                    return !this.isAccessTokenEmpty() && this.chatBotIsConnected();
+                };
+                HomeRemoteController.prototype.chatBotIsDisconnected = function () {
+                    return this.$scope.chatBotStatus === 1 /* ChatBotStatus.Disconnected */;
+                };
+                HomeRemoteController.prototype.chatBotIsConnecting = function () {
+                    return this.$scope.chatBotStatus === 2 /* ChatBotStatus.Connecting */;
+                };
+                HomeRemoteController.prototype.chatBotIsConnected = function () {
+                    return this.$scope.chatBotStatus === 3 /* ChatBotStatus.Connected */;
+                };
+                HomeRemoteController.prototype.chatBotIsError = function () {
+                    return this.$scope.chatBotStatus === 4 /* ChatBotStatus.Error */;
+                };
+                HomeRemoteController.prototype.chatBotStatusMessage = function () {
+                    var ctrl = this;
+                    switch (ctrl.$scope.chatBotStatus) {
+                        case 3 /* ChatBotStatus.Connected */:
+                            ctrl.$scope.chatBotStatusMessage = "Chatbot Connected - Last pinged: " + new Date().toLocaleTimeString();
+                            break;
+                        case 2 /* ChatBotStatus.Connecting */:
+                            ctrl.$scope.chatBotStatusMessage = "Connecting...";
+                            break;
+                        case 1 /* ChatBotStatus.Disconnected */:
+                            ctrl.$scope.chatBotStatusMessage = "Chatbot Disconnected";
+                            break;
+                        case 4 /* ChatBotStatus.Error */:
+                            ctrl.$scope.chatBotStatusMessage = "An error occured";
+                            break;
+                        default:
+                            ctrl.$scope.chatBotStatusMessage = "";
+                            break;
+                    }
                 };
                 HomeRemoteController.$inject = [
                     '$scope',

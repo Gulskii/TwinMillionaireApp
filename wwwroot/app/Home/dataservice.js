@@ -93,6 +93,7 @@ var App;
                 this.$http.get(query)
                     .then(function (result) {
                     deferred.resolve(result.data);
+                    console.log(result.data);
                 }, function (error) { return deferred.reject(); });
                 return deferred.promise;
             };
@@ -101,6 +102,16 @@ var App;
                 var deferred = this.$q.defer();
                 console.log(query);
                 this.$http.post(query, message)
+                    .then(function (result) {
+                    deferred.resolve(result.data);
+                }, function (error) { return deferred.reject(); });
+                return deferred.promise;
+            };
+            HomeDataService.prototype.pingChatbot = function () {
+                var query = this.baseUrl + "/api/Chatbot/PingChatBot";
+                var deferred = this.$q.defer();
+                console.log(query);
+                this.$http.get(query)
                     .then(function (result) {
                     deferred.resolve(result.data);
                 }, function (error) { return deferred.reject(); });
