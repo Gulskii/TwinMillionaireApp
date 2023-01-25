@@ -298,6 +298,10 @@ body {
     font-family: var(--twinFont);
 }
 
+.progress-segment-text {
+    font-size: 24px;
+}
+
 .progress-status-inactive {
     background-color: var(--twinGold);
 }
