@@ -83,8 +83,8 @@ var App;
                     var testWidth = metrics.width;
                     if (testWidth > maxWidth && n > 0) {
                         context.textAlign = "center";
-                        context.fillText(line, x, y);
                         context.strokeText(line, x, y);
+                        context.fillText(line, x, y);
                         line = words[n] + ' ';
                         y += lineHeight;
                     }

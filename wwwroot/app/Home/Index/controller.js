@@ -59,6 +59,7 @@ var App;
                     this.$scope.progressAddRemove = 0;
                     this.numberOfQuestions = 20;
                     this.generateProgressSegments();
+                    this.$scope.audioMute = false;
                 }
                 HomeIndexController.prototype.initialDisplayQuestion = function () {
                     this.$scope.displayQuestion = {
@@ -168,16 +169,20 @@ var App;
                     if (isCorrect) {
                         ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 2 /* AnswerStatus.Correct */;
                         var doot = new Audio("../sounds/correct answer.mp3");
-                        doot.volume = (this.$scope.volume / 100);
-                        doot.play();
+                        doot.volume = (ctrl.$scope.volume / 100);
+                        if (!ctrl.$scope.audioMute) {
+                            doot.play();
+                        }
                     }
                     else {
                         if (ctrl.playerChoice !== null)
                             ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 3 /* AnswerStatus.Incorrect */;
                         ctrl.$scope.answers[ctrl.$scope.chosenQuestion.correctAnswer - 1].answerStatus = 5 /* AnswerStatus.Actual */;
                         var doot = new Audio("../sounds/wrong answer.mp3");
-                        doot.volume = (this.$scope.volume / 100);
-                        doot.play();
+                        doot.volume = (ctrl.$scope.volume / 100);
+                        if (!ctrl.$scope.audioMute) {
+                            doot.play();
+                        }
                     }
                     ctrl.$scope.$applyAsync();
                 };
@@ -350,6 +355,12 @@ var App;
                 };
                 HomeIndexController.prototype.setVolume = function (ctrl, data) {
                     ctrl.$scope.volume = data;
+                };
+                HomeIndexController.prototype.mute = function () {
+                    this.$scope.audioMute = true;
+                };
+                HomeIndexController.prototype.unmute = function () {
+                    this.$scope.audioMute = false;
                 };
                 HomeIndexController.$inject = [
                     '$scope',

@@ -49,7 +49,7 @@ var App;
                     this.socket = this.socketClient.createSocket(this.baseUrl);
                     this.$scope.volume = 100;
                     this.$scope.chatBotStatus = 1 /* ChatBotStatus.Disconnected */;
-                    this.chatBotStatusMessage();
+                    this.chatBotStatusMessage(null);
                     this.pingChatBot();
                 }
                 HomeRemoteController.prototype.pingChatBot = function () {
@@ -135,7 +135,7 @@ var App;
                         //ongoing promise, only completes when chatbot closes properly
                         if (ctrl.$scope.chatBotStatus !== 4 /* ChatBotStatus.Error */) {
                             ctrl.$scope.chatBotStatus = 1 /* ChatBotStatus.Disconnected */;
-                            ctrl.chatBotStatusMessage();
+                            ctrl.chatBotStatusMessage(null);
                         }
                     });
                 };
@@ -318,14 +318,13 @@ var App;
                 };
                 HomeRemoteController.prototype.chatBotPong = function (ctrl, data) {
                     ctrl.$scope.chatBotStatus = 3 /* ChatBotStatus.Connected */;
-                    ctrl.chatBotStatusMessage();
+                    ctrl.chatBotStatusMessage(null);
                     ctrl.$scope.chatBotLastPinged = new Date();
                     ctrl.$scope.$applyAsync();
                 };
                 HomeRemoteController.prototype.chatBotError = function (ctrl, data) {
                     ctrl.$scope.chatBotStatus = 4 /* ChatBotStatus.Error */;
-                    ctrl.chatBotStatusMessage();
-                    console.log(data);
+                    ctrl.chatBotStatusMessage(data);
                     ctrl.$scope.$applyAsync();
                 };
                 HomeRemoteController.prototype.showStartChat = function () {
@@ -349,7 +348,7 @@ var App;
                 HomeRemoteController.prototype.chatBotIsError = function () {
                     return this.$scope.chatBotStatus === 4 /* ChatBotStatus.Error */;
                 };
-                HomeRemoteController.prototype.chatBotStatusMessage = function () {
+                HomeRemoteController.prototype.chatBotStatusMessage = function (data) {
                     var ctrl = this;
                     switch (ctrl.$scope.chatBotStatus) {
                         case 3 /* ChatBotStatus.Connected */:
@@ -362,7 +361,7 @@ var App;
                             ctrl.$scope.chatBotStatusMessage = "Chatbot Disconnected";
                             break;
                         case 4 /* ChatBotStatus.Error */:
-                            ctrl.$scope.chatBotStatusMessage = "An error occured";
+                            ctrl.$scope.chatBotStatusMessage = "An error occured: " + data;
                             break;
                         default:
                             ctrl.$scope.chatBotStatusMessage = "";
