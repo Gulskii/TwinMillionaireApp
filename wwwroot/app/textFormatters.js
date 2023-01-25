@@ -77,24 +77,29 @@ var App;
             }
             else {
                 context.clearRect(0, 0, canvas.width, canvas.height);
+                var multiLineArray = [];
+                var totalHeight = y;
                 for (var n = 0; n < words.length; n++) {
                     var testLine = line + words[n] + ' ';
                     var metrics = context.measureText(testLine);
                     var testWidth = metrics.width;
                     if (testWidth > maxWidth && n > 0) {
-                        context.textAlign = "center";
-                        context.strokeText(line, x, y);
-                        context.fillText(line, x, y);
+                        multiLineArray.push({ text: line, width: x, height: y });
                         line = words[n] + ' ';
                         y += lineHeight;
+                        totalHeight += lineHeight;
                     }
                     else {
                         line = testLine;
                     }
                 }
-                context.textAlign = "center";
-                context.strokeText(line, x, y);
-                context.fillText(line, x, y);
+                multiLineArray.push({ text: line, width: x, height: y });
+                var pad = Math.round((canvas.height - totalHeight) / 2);
+                $.each(multiLineArray, function (i, v) {
+                    context.textAlign = "center";
+                    context.strokeText(v.text, v.width, (v.height + pad));
+                    context.fillText(v.text, v.width, (v.height + pad));
+                });
             }
         }
         TextFormatters.wrapText = wrapText;
