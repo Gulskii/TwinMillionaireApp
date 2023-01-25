@@ -362,6 +362,9 @@ var App;
                 HomeIndexController.prototype.unmute = function () {
                     this.$scope.audioMute = false;
                 };
+                HomeIndexController.prototype.isAudioMuted = function () {
+                    return this.$scope.audioMute;
+                };
                 HomeIndexController.$inject = [
                     '$scope',
                     '$filter',
