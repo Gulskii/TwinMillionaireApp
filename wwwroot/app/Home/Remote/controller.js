@@ -35,7 +35,7 @@ var App;
                     this.$scope.accessToken = $("#accessToken").val();
                     this.currentTimerState = 1 /* TimerState.Clear */;
                     this.currentRoundState = 1 /* RoundState.Start */;
-                    this.$scope.clockSetTime = 20;
+                    this.$scope.clockSetTime = 15;
                     this.$scope.progressAddRemove = 0;
                     this.$scope.currentProgressSegment = 0;
                     this.$scope.ctrl = this;
@@ -172,19 +172,19 @@ var App;
                 HomeRemoteController.prototype.setClock = function (difficulty) {
                     switch (difficulty) {
                         case 1 /* DifficultyLevelType.Easy */:
-                            this.$scope.clockSetTime = 30;
+                            this.$scope.clockSetTime = 15;
                             break;
                         case 2 /* DifficultyLevelType.Medium */:
-                            this.$scope.clockSetTime = 35;
+                            this.$scope.clockSetTime = 20;
                             break;
                         case 3 /* DifficultyLevelType.Hard */:
-                            this.$scope.clockSetTime = 45;
+                            this.$scope.clockSetTime = 25;
                             break;
                         case 4 /* DifficultyLevelType.VeryHard */:
-                            this.$scope.clockSetTime = 60;
+                            this.$scope.clockSetTime = 30;
                             break;
                         case 5 /* DifficultyLevelType.Impossible */:
-                            this.$scope.clockSetTime = 80;
+                            this.$scope.clockSetTime = 45;
                             break;
                     }
                 };
