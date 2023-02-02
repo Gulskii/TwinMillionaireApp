@@ -24,6 +24,7 @@ var App;
                     this.magicWand = {
                         'loadChosenQuestion': this.loadChosenQuestion,
                         'flipNextPanel': this.flipNextPanel,
+                        'acceptQuestion': this.acceptQuestion,
                         'confirmAnswer': this.confirmAnswer,
                         'revealCorrectAnswer': this.revealCorrectAnswer,
                         'startClock': this.startClock,
@@ -36,7 +37,8 @@ var App;
                         'removeProgress': this.removeProgress,
                         'setCurrentSegment': this.setCurrentSegment,
                         'clearSegments': this.clearSegments,
-                        'setVolume': this.setVolume
+                        'setBGVolume': this.setBGVolume,
+                        'setSFXVolume': this.setSFXVolume,
                     };
                     this.revealCount = 0;
                     this.$scope.chosenQuestion = {};
@@ -60,6 +62,9 @@ var App;
                     this.numberOfQuestions = 20;
                     this.generateProgressSegments();
                     this.$scope.audioMute = false;
+                    this.$scope.bgVolume = 100;
+                    this.$scope.sfxVolume = 100;
+                    this.audioPlayer = new App.AudioPlayer();
                 }
                 HomeIndexController.prototype.initialDisplayQuestion = function () {
                     this.$scope.displayQuestion = {
@@ -131,6 +136,25 @@ var App;
                         ctrl.$scope.$applyAsync();
                     }, 500);
                 };
+                HomeIndexController.prototype.acceptQuestion = function (ctrl, data) {
+                    var sound = null;
+                    switch (data.difficultyLevelTypeId) {
+                        case 1 /* DifficultyLevelType.Easy */:
+                            sound = ctrl.audioPlayer.Easy;
+                            break;
+                        case 2 /* DifficultyLevelType.Medium */:
+                        case 3 /* DifficultyLevelType.Hard */:
+                            sound = ctrl.audioPlayer.MediumHard;
+                            break;
+                        case 4 /* DifficultyLevelType.VeryHard */:
+                            sound = ctrl.audioPlayer.VeryHard;
+                            break;
+                        case 5 /* DifficultyLevelType.Impossible */:
+                            sound = ctrl.audioPlayer.Impossible;
+                            break;
+                    }
+                    ctrl.audioPlayer.playBgMusic(sound, ctrl.$scope.bgVolume, ctrl.$scope.audioMute);
+                };
                 HomeIndexController.prototype.flipNextPanel = function (ctrl, data) {
                     switch (ctrl.revealCount) {
                         case 0:
@@ -168,21 +192,15 @@ var App;
                     var isCorrect = (ctrl.playerChoice === ctrl.$scope.chosenQuestion.correctAnswer);
                     if (isCorrect) {
                         ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 2 /* AnswerStatus.Correct */;
-                        var doot = new Audio("../sounds/correct answer.mp3");
-                        doot.volume = (ctrl.$scope.volume / 100);
-                        if (!ctrl.$scope.audioMute) {
-                            doot.play();
-                        }
+                        ctrl.audioPlayer.stopBgMusic();
+                        //App.AudioPlayer.playBgMusic(App.AudioPlayer.clockRunsOut, ctrl.$scope.volume, ctrl.$scope.audioMute);
                     }
                     else {
                         if (ctrl.playerChoice !== null)
                             ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 3 /* AnswerStatus.Incorrect */;
                         ctrl.$scope.answers[ctrl.$scope.chosenQuestion.correctAnswer - 1].answerStatus = 5 /* AnswerStatus.Actual */;
-                        var doot = new Audio("../sounds/wrong answer.mp3");
-                        doot.volume = (ctrl.$scope.volume / 100);
-                        if (!ctrl.$scope.audioMute) {
-                            doot.play();
-                        }
+                        ctrl.audioPlayer.stopBgMusic();
+                        //App.AudioPlayer.playBgMusic(App.AudioPlayer.clockRunsOut, ctrl.$scope.volume, ctrl.$scope.audioMute);
                     }
                     ctrl.$scope.$applyAsync();
                 };
@@ -211,6 +229,8 @@ var App;
                             ctrl.socket.send(JSON.stringify(webSocketCall));
                             ctrl.$scope.showIcon = true;
                             ctrl.$scope.$applyAsync();
+                            ctrl.audioPlayer.stopBgMusic();
+                            ctrl.audioPlayer.playSFX(ctrl.audioPlayer.ClockRunsOut, ctrl.$scope.sfxVolume, ctrl.$scope.audioMute);
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -329,6 +349,7 @@ var App;
                     this.$scope.answers[index].answerStatus = 1 /* AnswerStatus.Normal */;
                 };
                 HomeIndexController.prototype.addProgress = function (ctrl, data) {
+                    ctrl.audioPlayer.playSFX(ctrl.audioPlayer.MoneyBar, ctrl.$scope.sfxVolume, ctrl.$scope.audioMute);
                     ctrl.$scope.progressBar += data;
                     ctrl.$scope.$applyAsync();
                 };
@@ -337,6 +358,7 @@ var App;
                     ctrl.$scope.$applyAsync();
                 };
                 HomeIndexController.prototype.setCurrentSegment = function (ctrl, currentSegment) {
+                    ctrl.audioPlayer.playSFX(ctrl.audioPlayer.Flutter, ctrl.$scope.sfxVolume, ctrl.$scope.audioMute);
                     $.each(ctrl.$scope.progressSegments, function (i, v) {
                         if (v.sequence < currentSegment)
                             v.progressStatus = 3 /* ProgressStatus.Pass */;
@@ -353,8 +375,11 @@ var App;
                     });
                     ctrl.$scope.$applyAsync();
                 };
-                HomeIndexController.prototype.setVolume = function (ctrl, data) {
-                    ctrl.$scope.volume = data;
+                HomeIndexController.prototype.setBGVolume = function (ctrl, data) {
+                    ctrl.$scope.bgVolume = data;
+                };
+                HomeIndexController.prototype.setSFXVolume = function (ctrl, data) {
+                    ctrl.$scope.sfxVolume = data;
                 };
                 HomeIndexController.prototype.mute = function () {
                     this.$scope.audioMute = true;
