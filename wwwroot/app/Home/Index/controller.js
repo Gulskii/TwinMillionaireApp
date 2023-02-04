@@ -66,6 +66,7 @@ var App;
                     this.$scope.bgVolume = 100;
                     this.$scope.sfxVolume = 100;
                     this.lastSegment = 0;
+                    this.clockStopped = false;
                 }
                 HomeIndexController.prototype.initialDisplayQuestion = function () {
                     this.$scope.displayQuestion = {
@@ -138,23 +139,40 @@ var App;
                     }, 500);
                 };
                 HomeIndexController.prototype.acceptQuestion = function (ctrl, data) {
+                    ctrl.answerLocked = false;
+                    ctrl.clockStopped = false;
+                    ctrl.playQuestionMusic(data);
+                };
+                HomeIndexController.prototype.playQuestionMusic = function (question) {
+                    var _this = this;
                     var sound = null;
-                    switch (data.difficultyLevelTypeId) {
+                    switch (question.difficultyLevelTypeId) {
                         case 1 /* DifficultyLevelType.Easy */:
-                            sound = ctrl.audioPlayer.Easy;
+                            sound = this.audioPlayer.Easy;
+                            this.audioPlayer.stopBgMusic(true);
+                            setTimeout(function () {
+                                _this.audioPlayer.playBgMusic(sound, _this.$scope.audioMute);
+                            }, 500);
                             break;
                         case 2 /* DifficultyLevelType.Medium */:
                         case 3 /* DifficultyLevelType.Hard */:
-                            sound = ctrl.audioPlayer.MediumHard;
+                            sound = this.audioPlayer.MediumHard;
+                            this.audioPlayer.stopBgMusic(true);
+                            setTimeout(function () {
+                                _this.audioPlayer.playBgMusic(sound, _this.$scope.audioMute);
+                            }, 500);
                             break;
                         case 4 /* DifficultyLevelType.VeryHard */:
-                            sound = ctrl.audioPlayer.VeryHard;
+                            sound = this.audioPlayer.VeryHard;
+                            this.audioPlayer.stopBgMusic(true);
+                            setTimeout(function () {
+                                _this.audioPlayer.playBgMusic(sound, _this.$scope.audioMute);
+                            }, 500);
                             break;
                         case 5 /* DifficultyLevelType.Impossible */:
-                            sound = ctrl.audioPlayer.Impossible;
+                            this.playImpossible(true);
                             break;
                     }
-                    ctrl.audioPlayer.playBgMusic(sound, ctrl.$scope.audioMute);
                 };
                 HomeIndexController.prototype.flipNextPanel = function (ctrl, data) {
                     switch (ctrl.revealCount) {
@@ -183,30 +201,31 @@ var App;
                 HomeIndexController.prototype.confirmAnswer = function (ctrl, data) {
                     ctrl.playerChoice = data;
                     ctrl.changeAllAnswerColors();
-                    ctrl.$scope.answers[data - 1].answerStatus = 4 /* AnswerStatus.Guess */;
+                    ctrl.playImpossible(true);
+                    if (data != null) {
+                        ctrl.$scope.answers[data - 1].answerStatus = 4 /* AnswerStatus.Guess */;
+                        this.answerLocked = true;
+                    }
                     ctrl.$scope.showIcon = true;
                     ctrl.$scope.$applyAsync();
                     ctrl.timer.clearTimer();
-                    if (ctrl.$scope.chosenQuestion.difficultyLevelTypeId !== 5 /* DifficultyLevelType.Impossible */) {
-                        ctrl.audioPlayer.stopBgMusic();
-                        ctrl.audioPlayer.playBgMusic(ctrl.audioPlayer.Impossible, ctrl.$scope.audioMute);
-                    }
                 };
                 HomeIndexController.prototype.revealAnswer = function (ctrl, data) {
                     ctrl.changeAllAnswerColors();
                     var isCorrect = (ctrl.playerChoice === ctrl.$scope.chosenQuestion.correctAnswer);
                     if (isCorrect) {
                         ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 2 /* AnswerStatus.Correct */;
-                        ctrl.audioPlayer.stopBgMusic();
+                        ctrl.audioPlayer.stopBgMusic(false);
                         ctrl.audioPlayer.playSFX(ctrl.audioPlayer.CorrectAnswer, ctrl.$scope.audioMute);
                     }
                     else {
                         if (ctrl.playerChoice !== null)
                             ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 3 /* AnswerStatus.Incorrect */;
                         ctrl.$scope.answers[ctrl.$scope.chosenQuestion.correctAnswer - 1].answerStatus = 5 /* AnswerStatus.Actual */;
-                        ctrl.audioPlayer.stopBgMusic();
+                        ctrl.audioPlayer.stopBgMusic(false);
                         ctrl.audioPlayer.playSFX(ctrl.audioPlayer.WrongAnswer, ctrl.$scope.audioMute);
                     }
+                    ctrl.audioPlayer.bgAudio.src = "";
                     ctrl.$scope.$applyAsync();
                 };
                 HomeIndexController.prototype.hideAllPanels = function () {
@@ -228,13 +247,18 @@ var App;
                 };
                 HomeIndexController.prototype.startClock = function (ctrl, data) {
                     ctrl.$scope.showIcon = false;
+                    if (ctrl.clockStopped) {
+                        setTimeout(function () {
+                            ctrl.playQuestionMusic(ctrl.$scope.chosenQuestion);
+                        }, 500);
+                    }
                     ctrl.timer.startTimer(data).then(function (result) {
                         if (result === true) {
                             var webSocketCall = ctrl.socketClient.createWebSocketCall("timeUp", null);
                             ctrl.socket.send(JSON.stringify(webSocketCall));
                             ctrl.$scope.showIcon = true;
                             ctrl.$scope.$applyAsync();
-                            ctrl.audioPlayer.stopBgMusic();
+                            ctrl.audioPlayer.stopBgMusic(false);
                             ctrl.audioPlayer.playSFX(ctrl.audioPlayer.ClockRunsOut, ctrl.$scope.audioMute);
                         }
                     }).catch(function (error) {
@@ -244,9 +268,23 @@ var App;
                 };
                 HomeIndexController.prototype.resumeClock = function (ctrl, data) {
                     ctrl.timer.resumeTimer();
+                    setTimeout(function () {
+                        ctrl.playQuestionMusic(ctrl.$scope.chosenQuestion);
+                    }, 500);
                 };
                 HomeIndexController.prototype.stopClock = function (ctrl, data) {
                     ctrl.timer.stopTimer();
+                    ctrl.clockStopped = true;
+                    ctrl.playImpossible(true);
+                };
+                HomeIndexController.prototype.playImpossible = function (fadeOut) {
+                    var _this = this;
+                    if (this.audioPlayer.bgAudio.src.indexOf(this.audioPlayer.Impossible.substring(2)) === -1) {
+                        this.audioPlayer.stopBgMusic(fadeOut);
+                        setTimeout(function () {
+                            _this.audioPlayer.playBgMusic(_this.audioPlayer.Impossible, _this.$scope.audioMute);
+                        }, 500);
+                    }
                 };
                 HomeIndexController.prototype.clearClock = function (ctrl, data) {
                     ctrl.timer.clearTimer();
@@ -254,9 +292,16 @@ var App;
                 HomeIndexController.prototype.showAudienceAnswersGraph = function (ctrl) {
                     ctrl.dataService.getAudienceAnswers().then(function (results) {
                         ctrl.$scope.audienceAnswers = results;
-                        ctrl.createAudienceAnswersGraph();
-                        ctrl.showAudienceAnswers = true;
-                        ctrl.$scope.$applyAsync();
+                        ctrl.audioPlayer.stopBgMusic(false);
+                        ctrl.audioPlayer.playBgMusic(ctrl.audioPlayer.AudiencePollRevealMusic, ctrl.$scope.audioMute);
+                        setTimeout(function () {
+                            ctrl.createAudienceAnswersGraph();
+                            ctrl.showAudienceAnswers = true;
+                            ctrl.$scope.$applyAsync();
+                        }, 3920);
+                        setTimeout(function () {
+                            ctrl.playImpossible(false);
+                        }, 5000);
                     });
                 };
                 HomeIndexController.prototype.hideAudienceAnswersGraph = function (ctrl, data) {
@@ -276,6 +321,17 @@ var App;
                     var canvas = document.getElementById("audienceAnswersGraph");
                     var ctx = canvas.getContext("2d");
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    //fake data, please remove
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
+                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
                     var a = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 1; }).length;
                     var b = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 2; }).length;
                     var c = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 3; }).length;

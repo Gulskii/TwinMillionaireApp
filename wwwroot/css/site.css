@@ -416,6 +416,10 @@ body {
     width: 714px;
 }
 
+.correct {
+    background-color: var(--twinGreen);
+}
+
 progress {
     color: lightblue;
 }

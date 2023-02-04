@@ -5,6 +5,7 @@ var App;
     "use strict";
     var AudioPlayer = /** @class */ (function () {
         function AudioPlayer() {
+            this.AudiencePollRevealMusic = "../sounds/Audience_Poll_Reveal_Music.mp3";
             this.MoneyBar = "../sounds/money_bar.mp3";
             this.ClockRunsOut = "../sounds/Clock_runs_out.mp3";
             this.Easy = "../sounds/EasyMusic.mp3";
@@ -27,20 +28,46 @@ var App;
                 this.bgAudio.play();
             }
         };
-        AudioPlayer.prototype.stopBgMusic = function () {
-            this.bgAudio.pause();
+        AudioPlayer.prototype.stopBgMusic = function (fade) {
+            if (fade)
+                this.fadeOut(this.bgAudio);
+            else
+                this.bgAudio.pause();
         };
         AudioPlayer.prototype.fadeIn = function (audio) {
             audio.volume = 0;
             var ctrl = this;
+            var count = 0;
+            var s = 0;
+            var r = ctrl.bgVolume / 10;
             var fadeIn = setInterval(function () {
-                var s = (ctrl.bgVolume / 100 / 10);
-                audio.volume += s;
-                if (audio.volume >= (ctrl.bgVolume / 100)) {
+                count++;
+                s = s + r;
+                if (s >= ctrl.bgVolume || count >= 10) {
                     audio.volume = (ctrl.bgVolume / 100);
                     clearInterval(fadeIn);
                 }
-            }, 300);
+                else {
+                    audio.volume = (s / 100);
+                }
+            }, 50);
+        };
+        AudioPlayer.prototype.fadeOut = function (audio) {
+            var ctrl = this;
+            var count = 0;
+            var s = ctrl.bgVolume;
+            var r = s / 10;
+            var fadeOut = setInterval(function () {
+                count++;
+                s = s - r;
+                if (s <= 0 || count >= 10) {
+                    audio.volume = 0;
+                    clearInterval(fadeOut);
+                }
+                else {
+                    audio.volume = (s / 100);
+                }
+            }, 50);
         };
         AudioPlayer.prototype.playSFX = function (soundPath, mute) {
             this.sfxAudio = new Audio(soundPath);
