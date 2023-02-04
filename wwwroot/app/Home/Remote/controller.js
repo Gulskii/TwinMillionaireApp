@@ -9,7 +9,7 @@ var App;
         (function (Remote) {
             "use strict";
             var HomeRemoteController = /** @class */ (function () {
-                function HomeRemoteController($scope, $filter, $log, $timeout, $attrs, $q, $location, $anchorScroll, $window, dataService, baseUrl) {
+                function HomeRemoteController($scope, $filter, $log, $timeout, $attrs, $q, $location, $anchorScroll, $window, dataService, baseUrl, audioPlayer) {
                     var _this = this;
                     this.$scope = $scope;
                     this.$filter = $filter;
@@ -22,6 +22,7 @@ var App;
                     this.$window = $window;
                     this.dataService = dataService;
                     this.baseUrl = baseUrl;
+                    this.audioPlayer = audioPlayer;
                     this.magicWand = {
                         'timeUp': this.timeUp,
                         'chatBotPong': this.chatBotPong,
@@ -41,7 +42,6 @@ var App;
                     this.$scope.ctrl = this;
                     this.clearNewQuestion();
                     this.getQuestions();
-                    this.audioPlayer = new App.AudioPlayer();
                     this.dataService.getDifficultyLevelTypeEnum().then(function (results) {
                         _this.$scope.difficultyLevelTypes = results;
                     });
@@ -314,12 +314,15 @@ var App;
                     this.$scope.progressAddRemove = 0;
                 };
                 HomeRemoteController.prototype.setSFXVolume = function () {
-                    this.audioPlayer.playSFX(this.audioPlayer.ClockRunsOut, this.$scope.sfxVolume, false);
+                    this.audioPlayer.sfxVolume = this.$scope.sfxVolume;
+                    this.audioPlayer.sfxAudio.volume = (this.$scope.sfxVolume / 100);
+                    this.audioPlayer.playSFX(this.audioPlayer.ClockRunsOut, false);
                     var webSocketCall = this.socketClient.createWebSocketCall("setSFXVolume", this.$scope.sfxVolume);
                     this.socket.send(JSON.stringify(webSocketCall));
                 };
                 HomeRemoteController.prototype.setBGVolume = function () {
-                    this.audioPlayer.playSFX(this.audioPlayer.ClockRunsOut, this.$scope.bgVolume, false);
+                    this.audioPlayer.bgVolume = this.$scope.bgVolume;
+                    this.audioPlayer.bgAudio.volume = (this.$scope.bgVolume / 100);
                     var webSocketCall = this.socketClient.createWebSocketCall("setBGVolume", this.$scope.bgVolume);
                     this.socket.send(JSON.stringify(webSocketCall));
                 };
@@ -386,7 +389,8 @@ var App;
                     '$anchorScroll',
                     "$window",
                     'dataService',
-                    'baseUrl'
+                    'baseUrl',
+                    'audioPlayer',
                 ];
                 return HomeRemoteController;
             }());

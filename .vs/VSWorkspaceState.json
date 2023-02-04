@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\wwwroot"
   ],
-  "SelectedNode": "\\.gitignore",
+  "SelectedNode": "\\wwwroot\\js",
   "PreviewInSolutionExplorer": false
 }

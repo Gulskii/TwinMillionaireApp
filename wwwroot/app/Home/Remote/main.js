@@ -10,6 +10,7 @@ var App;
             angular.module('homeRemoteApp', [])
                 .controller('homeRemoteController', Remote.HomeRemoteController)
                 .service('dataService', Home.HomeDataService)
+                .service('audioPlayer', App.AudioPlayer)
                 .value('baseUrl', $("#baseUrl").val());
         })(Remote = Home.Remote || (Home.Remote = {}));
     })(Home = App.Home || (App.Home = {}));

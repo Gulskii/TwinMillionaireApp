@@ -12,33 +12,39 @@ var App;
             this.VeryHard = "../sounds/VeryHardMusic.mp3";
             this.Impossible = "../sounds/ImpossibleMusic.mp3";
             this.Flutter = "../sounds/Flutter.mp3";
+            this.CorrectAnswer = "../sounds/correct answer.mp3";
+            this.WrongAnswer = "../sounds/wrong answer.mp3";
             this.bgAudio = new Audio();
             this.sfxAudio = new Audio();
+            this.bgVolume = 100;
+            this.sfxVolume = 100;
         }
-        AudioPlayer.prototype.playBgMusic = function (soundPath, volume, mute) {
+        AudioPlayer.prototype.playBgMusic = function (soundPath, mute) {
             this.bgAudio.pause();
             this.bgAudio = new Audio(soundPath);
             if (!mute) {
-                this.fadeIn(this.bgAudio, volume);
+                this.fadeIn(this.bgAudio);
                 this.bgAudio.play();
             }
         };
         AudioPlayer.prototype.stopBgMusic = function () {
             this.bgAudio.pause();
         };
-        AudioPlayer.prototype.fadeIn = function (audio, maxVolume) {
+        AudioPlayer.prototype.fadeIn = function (audio) {
             audio.volume = 0;
+            var ctrl = this;
             var fadeIn = setInterval(function () {
-                audio.volume = audio.volume += (maxVolume / 100 / 10);
-                if (audio.volume >= (maxVolume / 100)) {
-                    audio.volume = (maxVolume / 100);
+                var s = (ctrl.bgVolume / 100 / 10);
+                audio.volume += s;
+                if (audio.volume >= (ctrl.bgVolume / 100)) {
+                    audio.volume = (ctrl.bgVolume / 100);
                     clearInterval(fadeIn);
                 }
             }, 300);
         };
-        AudioPlayer.prototype.playSFX = function (soundPath, volume, mute) {
+        AudioPlayer.prototype.playSFX = function (soundPath, mute) {
             this.sfxAudio = new Audio(soundPath);
-            this.sfxAudio.volume = (volume / 100);
+            this.sfxAudio.volume = (this.sfxVolume / 100);
             if (!mute) {
                 this.sfxAudio.play();
             }

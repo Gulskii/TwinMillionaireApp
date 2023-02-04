@@ -10,6 +10,7 @@ var App;
             angular.module('homeIndexApp', ['sharedProgressSegmentsApp', 'sharedAnswersApp', 'sharedQuestionApp', 'ui.bootstrap'])
                 .controller('homeIndexController', Index.HomeIndexController)
                 .service('dataService', Home.HomeDataService)
+                .service('audioPlayer', App.AudioPlayer)
                 .value('baseUrl', $("#baseUrl").val())
                 .directive('progressSegments', function () {
                 return {

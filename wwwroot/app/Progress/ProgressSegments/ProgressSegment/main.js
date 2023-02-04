@@ -19,7 +19,7 @@ var App;
                     };
                     return directive;
                     function link(scope, element, attrs) {
-                        var delay = scope.segment.sequence * 100;
+                        var delay = 100;
                         scope.$watch('segment', function (newValue, oldValue, scope) {
                             changeSegmentBackground(delay, scope, scope.segment, element);
                         }, true);

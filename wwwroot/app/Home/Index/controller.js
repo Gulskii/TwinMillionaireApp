@@ -9,7 +9,7 @@ var App;
         (function (Index) {
             "use strict";
             var HomeIndexController = /** @class */ (function () {
-                function HomeIndexController($scope, $filter, $log, $timeout, $attrs, $q, $location, $anchorScroll, $window, dataService, baseUrl) {
+                function HomeIndexController($scope, $filter, $log, $timeout, $attrs, $q, $location, $anchorScroll, $window, dataService, baseUrl, audioPlayer) {
                     this.$scope = $scope;
                     this.$filter = $filter;
                     this.$log = $log;
@@ -21,6 +21,7 @@ var App;
                     this.$window = $window;
                     this.dataService = dataService;
                     this.baseUrl = baseUrl;
+                    this.audioPlayer = audioPlayer;
                     this.magicWand = {
                         'loadChosenQuestion': this.loadChosenQuestion,
                         'flipNextPanel': this.flipNextPanel,
@@ -64,7 +65,7 @@ var App;
                     this.$scope.audioMute = false;
                     this.$scope.bgVolume = 100;
                     this.$scope.sfxVolume = 100;
-                    this.audioPlayer = new App.AudioPlayer();
+                    this.lastSegment = 0;
                 }
                 HomeIndexController.prototype.initialDisplayQuestion = function () {
                     this.$scope.displayQuestion = {
@@ -153,7 +154,7 @@ var App;
                             sound = ctrl.audioPlayer.Impossible;
                             break;
                     }
-                    ctrl.audioPlayer.playBgMusic(sound, ctrl.$scope.bgVolume, ctrl.$scope.audioMute);
+                    ctrl.audioPlayer.playBgMusic(sound, ctrl.$scope.audioMute);
                 };
                 HomeIndexController.prototype.flipNextPanel = function (ctrl, data) {
                     switch (ctrl.revealCount) {
@@ -186,6 +187,10 @@ var App;
                     ctrl.$scope.showIcon = true;
                     ctrl.$scope.$applyAsync();
                     ctrl.timer.clearTimer();
+                    if (ctrl.$scope.chosenQuestion.difficultyLevelTypeId !== 5 /* DifficultyLevelType.Impossible */) {
+                        ctrl.audioPlayer.stopBgMusic();
+                        ctrl.audioPlayer.playBgMusic(ctrl.audioPlayer.Impossible, ctrl.$scope.audioMute);
+                    }
                 };
                 HomeIndexController.prototype.revealAnswer = function (ctrl, data) {
                     ctrl.changeAllAnswerColors();
@@ -193,14 +198,14 @@ var App;
                     if (isCorrect) {
                         ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 2 /* AnswerStatus.Correct */;
                         ctrl.audioPlayer.stopBgMusic();
-                        //App.AudioPlayer.playBgMusic(App.AudioPlayer.clockRunsOut, ctrl.$scope.volume, ctrl.$scope.audioMute);
+                        ctrl.audioPlayer.playSFX(ctrl.audioPlayer.CorrectAnswer, ctrl.$scope.audioMute);
                     }
                     else {
                         if (ctrl.playerChoice !== null)
                             ctrl.$scope.answers[ctrl.playerChoice - 1].answerStatus = 3 /* AnswerStatus.Incorrect */;
                         ctrl.$scope.answers[ctrl.$scope.chosenQuestion.correctAnswer - 1].answerStatus = 5 /* AnswerStatus.Actual */;
                         ctrl.audioPlayer.stopBgMusic();
-                        //App.AudioPlayer.playBgMusic(App.AudioPlayer.clockRunsOut, ctrl.$scope.volume, ctrl.$scope.audioMute);
+                        ctrl.audioPlayer.playSFX(ctrl.audioPlayer.WrongAnswer, ctrl.$scope.audioMute);
                     }
                     ctrl.$scope.$applyAsync();
                 };
@@ -230,7 +235,7 @@ var App;
                             ctrl.$scope.showIcon = true;
                             ctrl.$scope.$applyAsync();
                             ctrl.audioPlayer.stopBgMusic();
-                            ctrl.audioPlayer.playSFX(ctrl.audioPlayer.ClockRunsOut, ctrl.$scope.sfxVolume, ctrl.$scope.audioMute);
+                            ctrl.audioPlayer.playSFX(ctrl.audioPlayer.ClockRunsOut, ctrl.$scope.audioMute);
                         }
                     }).catch(function (error) {
                         console.log(error);
@@ -349,7 +354,7 @@ var App;
                     this.$scope.answers[index].answerStatus = 1 /* AnswerStatus.Normal */;
                 };
                 HomeIndexController.prototype.addProgress = function (ctrl, data) {
-                    ctrl.audioPlayer.playSFX(ctrl.audioPlayer.MoneyBar, ctrl.$scope.sfxVolume, ctrl.$scope.audioMute);
+                    ctrl.audioPlayer.playSFX(ctrl.audioPlayer.MoneyBar, ctrl.$scope.audioMute);
                     ctrl.$scope.progressBar += data;
                     ctrl.$scope.$applyAsync();
                 };
@@ -358,16 +363,23 @@ var App;
                     ctrl.$scope.$applyAsync();
                 };
                 HomeIndexController.prototype.setCurrentSegment = function (ctrl, currentSegment) {
-                    ctrl.audioPlayer.playSFX(ctrl.audioPlayer.Flutter, ctrl.$scope.sfxVolume, ctrl.$scope.audioMute);
+                    ctrl.audioPlayer.playSFX(ctrl.audioPlayer.Flutter, ctrl.$scope.audioMute);
+                    var time = ((100 * ctrl.$scope.progressSegments.length) - (100 * ctrl.lastSegment));
                     $.each(ctrl.$scope.progressSegments, function (i, v) {
-                        if (v.sequence < currentSegment)
-                            v.progressStatus = 3 /* ProgressStatus.Pass */;
-                        else if (v.sequence === currentSegment)
-                            v.progressStatus = 2 /* ProgressStatus.Current */;
-                        else
-                            v.progressStatus = 1 /* ProgressStatus.Inactive */;
+                        if (time > 0) {
+                            time -= 100;
+                        }
+                        setTimeout(function () {
+                            if (v.sequence < currentSegment)
+                                v.progressStatus = 3 /* ProgressStatus.Pass */;
+                            else if (v.sequence === currentSegment)
+                                v.progressStatus = 2 /* ProgressStatus.Current */;
+                            else
+                                v.progressStatus = 1 /* ProgressStatus.Inactive */;
+                            ctrl.$scope.$applyAsync();
+                        }, time);
                     });
-                    ctrl.$scope.$applyAsync();
+                    ctrl.lastSegment = currentSegment;
                 };
                 HomeIndexController.prototype.clearSegments = function (ctrl, data) {
                     $.each(ctrl.$scope.progressSegments, function (i, v) {
@@ -377,9 +389,13 @@ var App;
                 };
                 HomeIndexController.prototype.setBGVolume = function (ctrl, data) {
                     ctrl.$scope.bgVolume = data;
+                    ctrl.audioPlayer.bgAudio.volume = (ctrl.$scope.bgVolume / 100);
+                    ctrl.audioPlayer.bgVolume = ctrl.$scope.bgVolume;
                 };
                 HomeIndexController.prototype.setSFXVolume = function (ctrl, data) {
                     ctrl.$scope.sfxVolume = data;
+                    ctrl.audioPlayer.sfxAudio.volume = (ctrl.$scope.sfxVolume / 100);
+                    ctrl.audioPlayer.sfxVolume = ctrl.$scope.sfxVolume;
                 };
                 HomeIndexController.prototype.mute = function () {
                     this.$scope.audioMute = true;
@@ -401,7 +417,8 @@ var App;
                     '$anchorScroll',
                     "$window",
                     'dataService',
-                    'baseUrl'
+                    'baseUrl',
+                    'audioPlayer'
                 ];
                 return HomeIndexController;
             }());
