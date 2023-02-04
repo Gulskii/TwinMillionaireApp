@@ -292,16 +292,18 @@ var App;
                 HomeIndexController.prototype.showAudienceAnswersGraph = function (ctrl) {
                     ctrl.dataService.getAudienceAnswers().then(function (results) {
                         ctrl.$scope.audienceAnswers = results;
-                        ctrl.audioPlayer.stopBgMusic(false);
-                        ctrl.audioPlayer.playBgMusic(ctrl.audioPlayer.AudiencePollRevealMusic, ctrl.$scope.audioMute);
+                        ctrl.audioPlayer.stopBgMusic(true);
                         setTimeout(function () {
-                            ctrl.createAudienceAnswersGraph();
-                            ctrl.showAudienceAnswers = true;
-                            ctrl.$scope.$applyAsync();
-                        }, 3920);
-                        setTimeout(function () {
-                            ctrl.playImpossible(false);
-                        }, 5000);
+                            ctrl.audioPlayer.playBgMusic(ctrl.audioPlayer.AudiencePollRevealMusic, ctrl.$scope.audioMute);
+                            setTimeout(function () {
+                                ctrl.createAudienceAnswersGraph();
+                                ctrl.showAudienceAnswers = true;
+                                ctrl.$scope.$applyAsync();
+                            }, 3920);
+                            setTimeout(function () {
+                                ctrl.playImpossible(false);
+                            }, 5000);
+                        }, 500);
                     });
                 };
                 HomeIndexController.prototype.hideAudienceAnswersGraph = function (ctrl, data) {
