@@ -40,6 +40,7 @@ var App;
                         'clearSegments': this.clearSegments,
                         'setBGVolume': this.setBGVolume,
                         'setSFXVolume': this.setSFXVolume,
+                        'killCurrentAudio': this.killCurrentAudio,
                     };
                     this.revealCount = 0;
                     this.$scope.chosenQuestion = {};
@@ -48,8 +49,7 @@ var App;
                     this.$scope.accessToken = $("#accessToken").val();
                     this.$scope.ctrl = this;
                     var ctrl = this;
-                    this.showAudienceAnswers = false;
-                    this.audienceAnswersGraph = null;
+                    this.showAudienceAnswers = true;
                     this.$scope.showIcon = true;
                     this.socket = this.socketClient.createSocket(this.baseUrl);
                     this.timer = new App.Timer(this.$q, "timer", "timerOutline");
@@ -292,116 +292,34 @@ var App;
                 HomeIndexController.prototype.showAudienceAnswersGraph = function (ctrl) {
                     ctrl.dataService.getAudienceAnswers().then(function (results) {
                         ctrl.$scope.audienceAnswers = results;
+                        //fake data, please remove
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
+                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
                         ctrl.audioPlayer.stopBgMusic(true);
                         setTimeout(function () {
                             ctrl.audioPlayer.playBgMusic(ctrl.audioPlayer.AudiencePollRevealMusic, ctrl.$scope.audioMute);
-                            setTimeout(function () {
-                                ctrl.createAudienceAnswersGraph();
-                                ctrl.showAudienceAnswers = true;
-                                ctrl.$scope.$applyAsync();
-                            }, 3920);
+                            ctrl.$scope.$broadcast("showAudienceAnswersGraph");
                             setTimeout(function () {
                                 ctrl.playImpossible(false);
                             }, 5000);
                         }, 500);
                     });
                 };
-                HomeIndexController.prototype.hideAudienceAnswersGraph = function (ctrl, data) {
-                    ctrl.showAudienceAnswers = false;
-                    ctrl.$scope.$applyAsync();
-                };
-                HomeIndexController.prototype.displayAudienceAnswers = function () {
-                    return this.showAudienceAnswers;
+                HomeIndexController.prototype.hideAudienceAnswersGraph = function (ctrl) {
+                    ctrl.$scope.$broadcast("hideAudienceAnswersGraph");
                 };
                 HomeIndexController.prototype.getAudienceLeaderboard = function () {
                     var _this = this;
                     this.dataService.getAudienceLeaderboard().then(function (results) {
                         _this.$scope.audienceLeaderboard = results;
-                    });
-                };
-                HomeIndexController.prototype.createAudienceAnswersGraph = function () {
-                    var canvas = document.getElementById("audienceAnswersGraph");
-                    var ctx = canvas.getContext("2d");
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    //fake data, please remove
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
-                    this.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
-                    var a = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 1; }).length;
-                    var b = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 2; }).length;
-                    var c = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 3; }).length;
-                    var d = this.$scope.audienceAnswers.filter(function (result) { return result.answerChosen == 4; }).length;
-                    var total = a + b + c + d;
-                    canvas.style.backgroundColor = 'limegreen';
-                    var grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                    grd.addColorStop(0, App.TwinLifeline1);
-                    grd.addColorStop(.33, App.TwinLifeline2);
-                    grd.addColorStop(.66, App.TwinLifeline3);
-                    grd.addColorStop(1, App.TwinLifeline4);
-                    ctx.fillStyle = grd;
-                    if (this.audienceAnswersGraph !== null)
-                        this.audienceAnswersGraph.destroy();
-                    this.audienceAnswersGraph = new Chart(canvas, {
-                        type: 'bar',
-                        data: {
-                            labels: ['A', 'B', 'C', 'D'],
-                            datasets: [{
-                                    label: '# of Votes',
-                                    data: [a, b, c, d],
-                                    borderWidth: 1,
-                                    backgroundColor: grd
-                                }]
-                        },
-                        options: {
-                            responsive: false,
-                            animation: {
-                                easing: "easeInCubic"
-                            },
-                            maintainAspectRatio: false,
-                            legend: {
-                                display: false
-                            },
-                            scales: {
-                                xAxes: [{
-                                        gridLines: {
-                                            display: false
-                                        },
-                                        ticks: {
-                                            fontSize: 24,
-                                            fontFamily: App.TwinFont,
-                                            fontColor: "white"
-                                        }
-                                    }],
-                                yAxes: [{
-                                        gridLines: {
-                                            display: false
-                                        },
-                                        ticks: {
-                                            beginAtZero: true,
-                                            display: false
-                                        }
-                                    }]
-                            },
-                            tooltips: {
-                                callbacks: {
-                                    label: function (tooltipItem, data) {
-                                        var label = data.datasets[tooltipItem.datasetIndex].label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        label += Math.round(tooltipItem.yLabel * 100) / 100;
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
                     });
                 };
                 HomeIndexController.prototype.writeQuestion = function (question) {
@@ -454,6 +372,10 @@ var App;
                     ctrl.$scope.sfxVolume = data;
                     ctrl.audioPlayer.sfxAudio.volume = (ctrl.$scope.sfxVolume / 100);
                     ctrl.audioPlayer.sfxVolume = ctrl.$scope.sfxVolume;
+                };
+                HomeIndexController.prototype.killCurrentAudio = function (ctrl, data) {
+                    ctrl.audioPlayer.stopBgMusic(true);
+                    ctrl.audioPlayer.stopSfx();
                 };
                 HomeIndexController.prototype.mute = function () {
                     this.$scope.audioMute = true;

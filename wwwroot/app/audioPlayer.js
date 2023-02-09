@@ -34,6 +34,9 @@ var App;
             else
                 this.bgAudio.pause();
         };
+        AudioPlayer.prototype.stopSfx = function () {
+            this.sfxAudio.pause();
+        };
         AudioPlayer.prototype.fadeIn = function (audio) {
             audio.volume = 0;
             var ctrl = this;

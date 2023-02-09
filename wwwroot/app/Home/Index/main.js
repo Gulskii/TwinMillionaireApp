@@ -7,11 +7,20 @@ var App;
         var Index;
         (function (Index) {
             "use strict";
-            angular.module('homeIndexApp', ['sharedProgressSegmentsApp', 'sharedAnswersApp', 'sharedQuestionApp', 'ui.bootstrap'])
+            angular.module('homeIndexApp', ['sharedProgressSegmentsApp', 'sharedAnswersApp', 'sharedQuestionApp', 'sharedAudienceAnswersApp', 'ui.bootstrap'])
                 .controller('homeIndexController', Index.HomeIndexController)
                 .service('dataService', Home.HomeDataService)
                 .service('audioPlayer', App.AudioPlayer)
                 .value('baseUrl', $("#baseUrl").val())
+                .directive('audienceAnswers', function () {
+                return {
+                    restrict: 'E',
+                    scope: {
+                        audienceAnswers: '='
+                    },
+                    templateUrl: '/Shared/AudienceAnswers'
+                };
+            })
                 .directive('progressSegments', function () {
                 return {
                     restrict: 'E',

@@ -108,6 +108,7 @@ var App;
                 HomeRemoteController.prototype.getAudienceLeaderboard = function () {
                     var _this = this;
                     this.dataService.getAudienceLeaderboard().then(function (results) {
+                        _this.$scope.audienceLeaderboardCount = results.length;
                         _this.$scope.audienceLeaderboard = results;
                     });
                 };
@@ -286,6 +287,12 @@ var App;
                     return this.currentTimerState === 2 /* TimerState.Started */ || this.currentTimerState === 3 /* TimerState.Stopped */;
                 };
                 HomeRemoteController.prototype.showAudienceAnswersGraph = function () {
+                    this.$scope.audienceAnswersCount = 0;
+                    this.dataService.getAudienceAnswers().then(function (result) {
+                        //this.$scope.audienceAnswersCount = result.length;
+                        //this.$scope.audienceAnswers = result;
+                        //console.log(result);
+                    });
                     var webSocketCall = this.socketClient.createWebSocketCall("showAudienceAnswersGraph", null);
                     this.socket.send(JSON.stringify(webSocketCall));
                 };
@@ -324,6 +331,10 @@ var App;
                     this.audioPlayer.bgVolume = this.$scope.bgVolume;
                     this.audioPlayer.bgAudio.volume = (this.$scope.bgVolume / 100);
                     var webSocketCall = this.socketClient.createWebSocketCall("setBGVolume", this.$scope.bgVolume);
+                    this.socket.send(JSON.stringify(webSocketCall));
+                };
+                HomeRemoteController.prototype.killCurrentAudio = function () {
+                    var webSocketCall = this.socketClient.createWebSocketCall("killCurrentAudio", null);
                     this.socket.send(JSON.stringify(webSocketCall));
                 };
                 HomeRemoteController.prototype.chatBotPong = function (ctrl, data) {
