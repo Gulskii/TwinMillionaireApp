@@ -78,7 +78,7 @@ body {
 .question-text {
     position: absolute;
     left: 12px;
-    top: 12px;   
+    top: 12px;
 }
 
 .question-flip {
@@ -377,16 +377,16 @@ body {
     position: absolute;
     top: 526px;
     left: 702px;
-    width:125px;
+    width: 125px;
     z-index: 2;
     transition: opacity 500ms;
 }
 
-.logo-disappear {    
+.logo-disappear {
     opacity: 0;
 }
 
-.logo-appear {    
+.logo-appear {
     opacity: 1;
 }
 
@@ -437,3 +437,58 @@ progress {
     progress::-webkit-progress-bar {
         background: white;
     }
+
+.audience-answers {
+    position: absolute;
+    left: 302px;
+    top: 31px;
+}
+
+.bar {
+    width: 43px;
+    height: 200px;
+    background: linear-gradient( 180deg, var(--twinLifeline1) 0%, var(--twinLifeline2) 40%, var(--twinLifeline3) 100%);
+    z-index: 10;
+}
+
+.bar-a {
+    top: 0px; 
+    left: 30px; 
+    position: absolute;
+}
+
+.bar-b {
+    top: 0px;
+    left: 89px;
+    position: absolute;
+}
+
+.bar-c {
+    top: 0px;
+    left: 148px;
+    position: absolute;
+}
+
+.bar-d {
+    top: 0px;
+    left: 207px;
+    position: absolute;
+}
+
+.bar-cover {
+    animation: flux 3980ms ease 0s 1 normal;
+    width: 44px;
+    height: 200px;
+    background-color: limegreen;
+    z-index: 20;
+}
+
+@keyframes flux {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
