@@ -57,16 +57,16 @@ var App;
                     ctrl.dataService.getAudienceAnswers().then(function (results) {
                         ctrl.$scope.audienceAnswers = results;
                         //fake data, please remove
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
-                        ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 4 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 3 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 2 });
+                        //ctrl.$scope.audienceAnswers.push({ userName: '1', answerChosen: 1 });
                         //ctrl.audioPlayer.stopBgMusic(true);
                         setTimeout(function () {
                             //ctrl.audioPlayer.playBgMusic(ctrl.audioPlayer.AudiencePollRevealMusic, ctrl.$scope.audioMute);
