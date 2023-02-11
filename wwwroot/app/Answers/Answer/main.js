@@ -43,7 +43,9 @@ var App;
                                 canvas: element
                             };
                             var context = el.canvas[0].getContext('2d');
-                            App.TextFormatters.fitTextOnCanvas(el.canvas[0], context, 0, 0, scope.choice, App.TwinFont);
+                            setTimeout(function () {
+                                App.TextFormatters.fitTextOnCanvas(el.canvas[0], context, 0, 0, scope.choice, App.TwinFont);
+                            }, 500);
                         });
                     }
                 }

@@ -39,6 +39,10 @@ var App;
                     this.$scope.clockSetTime = 15;
                     this.$scope.progressAddRemove = 0;
                     this.$scope.currentProgressSegment = 0;
+                    this.$scope.stageUrl = this.baseUrl + "/Home/Stage";
+                    this.$scope.progressSegmentUrl = this.baseUrl + "/Home/Progress";
+                    this.$scope.progressBarUrl = this.baseUrl + "/Home/ProgressBar";
+                    this.$scope.audienceAnswersUrl = this.baseUrl + "/Home/AudienceAnswers";
                     this.$scope.ctrl = this;
                     this.clearNewQuestion();
                     this.getQuestions();
@@ -388,6 +392,18 @@ var App;
                             ctrl.$scope.chatBotStatusMessage = "";
                             break;
                     }
+                };
+                HomeRemoteController.prototype.openStage = function () {
+                    window.open(this.$scope.stageUrl, "_blank");
+                };
+                HomeRemoteController.prototype.openProgressSegment = function () {
+                    window.open(this.$scope.progressSegmentUrl, "_blank");
+                };
+                HomeRemoteController.prototype.openProgressBar = function () {
+                    window.open(this.$scope.progressBarUrl, "_blank");
+                };
+                HomeRemoteController.prototype.openAudienceAnswers = function () {
+                    window.open(this.$scope.audienceAnswersUrl, "_blank");
                 };
                 HomeRemoteController.$inject = [
                     '$scope',
