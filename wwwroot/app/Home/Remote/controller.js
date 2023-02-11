@@ -57,6 +57,7 @@ var App;
                     this.$scope.chatBotStatus = 1 /* ChatBotStatus.Disconnected */;
                     this.chatBotStatusMessage(null);
                     this.pingChatBot();
+                    this.$scope.clearConfirm = false;
                 }
                 HomeRemoteController.prototype.pingChatBot = function () {
                     var ctrl = this;
@@ -211,10 +212,17 @@ var App;
                 HomeRemoteController.prototype.closeTakingAnswers = function () {
                     this.dataService.closeTakingAnswers();
                 };
+                HomeRemoteController.prototype.areYouSure = function () {
+                    this.$scope.clearConfirm = true;
+                };
+                HomeRemoteController.prototype.cancelClear = function () {
+                    this.$scope.clearConfirm = false;
+                };
                 HomeRemoteController.prototype.clearAudienceLeaderboard = function () {
                     var _this = this;
                     this.dataService.clearAudienceLeaderboard().then(function (results) {
                         _this.getAudienceLeaderboard();
+                        _this.$scope.clearConfirm = false;
                     });
                 };
                 HomeRemoteController.prototype.flipNextPanel = function () {
