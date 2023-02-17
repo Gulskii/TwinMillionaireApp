@@ -63,7 +63,7 @@ var App;
                             addAnswerColor(element, scope.answer);
                         }
                         scope.$applyAsync();
-                    }, baseDelay);
+                    }, baseDelay + 100);
                     setTimeout(function () {
                         if (!flipped) {
                             scope.answer.showAnswerText = false;

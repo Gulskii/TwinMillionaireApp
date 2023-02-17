@@ -23,6 +23,7 @@ var App;
         AudioPlayer.prototype.playBgMusic = function (soundPath, mute) {
             this.bgAudio.pause();
             this.bgAudio = new Audio(soundPath);
+            this.bgAudio.loop = true;
             if (!mute) {
                 this.fadeIn(this.bgAudio);
                 this.bgAudio.play();
