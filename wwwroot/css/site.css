@@ -492,3 +492,23 @@ progress {
         opacity: 1;
     }
 }
+
+.question-count {
+    border-radius: 105px;
+    position: absolute;
+    border: 5px solid black;
+    width: 109px;
+    height: 109px;
+    background-color: navy;
+    left: 710px;
+    top: 534px;
+    z-index: 30;
+    transition: opacity 500ms;
+}
+
+.question-count-label {
+    margin-left: 10px;
+    margin-top: 10px;
+ 
+}
+

@@ -21,7 +21,8 @@ var App;
                     templateUrl: '/Shared/Answers'
                 };
             })
-                .directive("iconDisplay", iconDisplay);
+                .directive("iconDisplay", iconDisplay)
+                .directive("counterDisplay", counterDisplay);
             function iconDisplay() {
                 var directive = {
                     link: link,
@@ -30,6 +31,18 @@ var App;
                 return directive;
                 function link(scope, element, attrs) {
                     scope.$watch('showIcon', function (newValue, oldValue, scope) {
+                        showIcon(element, newValue);
+                    }, true);
+                }
+            }
+            function counterDisplay() {
+                var directive = {
+                    link: link,
+                    restrict: 'A'
+                };
+                return directive;
+                function link(scope, element, attrs) {
+                    scope.$watch('showCounter', function (newValue, oldValue, scope) {
                         showIcon(element, newValue);
                     }, true);
                 }

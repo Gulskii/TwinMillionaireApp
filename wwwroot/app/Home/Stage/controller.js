@@ -36,6 +36,7 @@ var App;
                         'setSFXVolume': this.setSFXVolume,
                         'killCurrentAudio': this.killCurrentAudio,
                         'showAudienceAnswersGraph': this.showAudienceAnswersGraph,
+                        'changeCurrentQuestion': this.changeCurrentQuestion,
                     };
                     this.revealCount = 0;
                     this.$scope.chosenQuestion = {};
@@ -44,6 +45,7 @@ var App;
                     this.$scope.ctrl = this;
                     var ctrl = this;
                     this.$scope.showIcon = true;
+                    this.$scope.showCounter = false;
                     this.socket = this.socketClient.createSocket(this.baseUrl);
                     this.timer = new App.Timer(this.$q, "timer", "timerOutline");
                     this.$scope.answers = [];
@@ -52,6 +54,7 @@ var App;
                     this.$scope.audioMute = false;
                     this.$scope.bgVolume = 100;
                     this.$scope.sfxVolume = 100;
+                    this.$scope.currentQuestion = 0;
                     this.clockStopped = false;
                 }
                 HomeStageController.prototype.initialDisplayQuestion = function () {
@@ -98,15 +101,14 @@ var App;
                 };
                 HomeStageController.prototype.loadChosenQuestion = function (ctrl, data) {
                     ctrl.hideAllPanels();
-                    ctrl.$scope.showIcon = true;
                     setTimeout(function () {
                         ctrl.clearClock(ctrl, null);
                         ctrl.$scope.chosenQuestion = data;
-                        ctrl.writeQuestion(data.questionContent);
-                        ctrl.writeAnswer(data.firstAnswer, 0);
-                        ctrl.writeAnswer(data.secondAnswer, 1);
-                        ctrl.writeAnswer(data.thirdAnswer, 2);
-                        ctrl.writeAnswer(data.fourthAnswer, 3);
+                        ctrl.writeQuestion(data.questionContent.trim());
+                        ctrl.writeAnswer(data.firstAnswer.trim(), 0);
+                        ctrl.writeAnswer(data.secondAnswer.trim(), 1);
+                        ctrl.writeAnswer(data.thirdAnswer.trim(), 2);
+                        ctrl.writeAnswer(data.fourthAnswer.trim(), 3);
                         ctrl.$scope.$applyAsync();
                     }, 500);
                 };
@@ -114,6 +116,9 @@ var App;
                     ctrl.answerLocked = false;
                     ctrl.clockStopped = false;
                     ctrl.playQuestionMusic(data);
+                    ctrl.$scope.showIcon = false;
+                    ctrl.$scope.showCounter = true;
+                    ctrl.$scope.$applyAsync();
                 };
                 HomeStageController.prototype.playQuestionMusic = function (question) {
                     var _this = this;
@@ -179,6 +184,7 @@ var App;
                         this.answerLocked = true;
                     }
                     ctrl.$scope.showIcon = true;
+                    ctrl.$scope.showCounter = false;
                     ctrl.$scope.$applyAsync();
                     ctrl.timer.clearTimer();
                 };
@@ -219,6 +225,7 @@ var App;
                 };
                 HomeStageController.prototype.startClock = function (ctrl, data) {
                     ctrl.$scope.showIcon = false;
+                    ctrl.$scope.showCounter = false;
                     if (ctrl.clockStopped) {
                         setTimeout(function () {
                             ctrl.playQuestionMusic(ctrl.$scope.chosenQuestion);
@@ -229,6 +236,7 @@ var App;
                             var webSocketCall = ctrl.socketClient.createWebSocketCall("timeUp", null);
                             ctrl.socket.send(JSON.stringify(webSocketCall));
                             ctrl.$scope.showIcon = true;
+                            ctrl.$scope.showCounter = false;
                             ctrl.$scope.$applyAsync();
                             ctrl.audioPlayer.stopBgMusic(false);
                             ctrl.audioPlayer.playSFX(ctrl.audioPlayer.ClockRunsOut, ctrl.$scope.audioMute);
@@ -299,6 +307,16 @@ var App;
                 };
                 HomeStageController.prototype.isAudioMuted = function () {
                     return this.$scope.audioMute;
+                };
+                HomeStageController.prototype.changeCurrentQuestion = function (ctrl, data) {
+                    ctrl.$scope.currentQuestion = data;
+                    ctrl.$scope.$applyAsync();
+                    var canvas = document.getElementById("questionCountLabel");
+                    var context = canvas.getContext("2d");
+                    var qText = "Q" + ctrl.$scope.currentQuestion;
+                    App.TextFormatters.fitTextOnCanvas(canvas, context, 0, 0, qText, App.TwinFont, 55);
+                };
+                HomeStageController.prototype.showQuestionCount = function () {
                 };
                 HomeStageController.$inject = [
                     '$scope',

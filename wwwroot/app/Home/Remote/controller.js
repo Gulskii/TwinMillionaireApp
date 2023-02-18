@@ -206,6 +206,7 @@ var App;
                         _this.$scope.currentQuestion++;
                         var webSocketCall = _this.socketClient.createWebSocketCall("acceptQuestion", _this.$scope.chosenQuestion);
                         _this.socket.send(JSON.stringify(webSocketCall));
+                        _this.changeCurrentQuestion();
                     });
                 };
                 HomeRemoteController.prototype.showAcceptQuestion = function () {
@@ -414,6 +415,10 @@ var App;
                 };
                 HomeRemoteController.prototype.openAudienceAnswers = function () {
                     window.open(this.$scope.audienceAnswersUrl, "_blank");
+                };
+                HomeRemoteController.prototype.changeCurrentQuestion = function () {
+                    var webSocketCall = this.socketClient.createWebSocketCall("changeCurrentQuestion", this.$scope.currentQuestion);
+                    this.socket.send(JSON.stringify(webSocketCall));
                 };
                 HomeRemoteController.$inject = [
                     '$scope',

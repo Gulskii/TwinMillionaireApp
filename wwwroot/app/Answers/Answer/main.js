@@ -44,7 +44,7 @@ var App;
                             };
                             var context = el.canvas[0].getContext('2d');
                             setTimeout(function () {
-                                App.TextFormatters.fitTextOnCanvas(el.canvas[0], context, 0, 0, scope.choice, App.TwinFont);
+                                App.TextFormatters.fitTextOnCanvas(el.canvas[0], context, 0, 0, scope.choice, App.TwinFont, 42);
                             }, 500);
                         });
                     }
@@ -145,7 +145,7 @@ var App;
                                     canvas: element
                                 };
                                 var context = el.canvas[0].getContext('2d');
-                                App.TextFormatters.fitTextOnCanvas(el.canvas[0], context, 0, 0, scope.answer.text, App.TwinFont);
+                                App.TextFormatters.fitTextOnCanvas(el.canvas[0], context, 0, 0, scope.answer.text, App.TwinFont, 42);
                             }, 500);
                         }, true);
                     }

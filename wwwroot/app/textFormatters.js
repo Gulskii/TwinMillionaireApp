@@ -22,9 +22,7 @@ var App;
             return Math.abs(context.measureText(text).actualBoundingBoxLeft)
                 + Math.abs(context.measureText(text).actualBoundingBoxRight);
         }
-        function fitTextOnCanvas(canvas, context, paddingX, paddingY, text, fontface) {
-            // start with a large font size
-            var fontsize = 42;
+        function fitTextOnCanvas(canvas, context, paddingX, paddingY, text, fontface, fontsize) {
             var xTotal = 0;
             var actualTextWidth = 0;
             var xAlignment = 0;
