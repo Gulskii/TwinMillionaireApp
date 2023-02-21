@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\wwwroot",
+    "\\wwwroot\\css"
   ],
-  "SelectedNode": "\\tsconfig.json",
+  "SelectedNode": "\\wwwroot\\css\\timer.css",
   "PreviewInSolutionExplorer": false
 }

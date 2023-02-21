@@ -44,6 +44,7 @@ var App;
                     this.$scope.progressSegmentUrl = this.currentUri + "Home/Progress";
                     this.$scope.progressBarUrl = this.currentUri + "Home/ProgressBar";
                     this.$scope.audienceAnswersUrl = this.currentUri + "Home/AudienceAnswers";
+                    this.$scope.drawUrl = this.currentUri + "Home/Draw";
                     this.$scope.ctrl = this;
                     this.clearNewQuestion();
                     this.getQuestions();
@@ -416,8 +417,19 @@ var App;
                 HomeRemoteController.prototype.openAudienceAnswers = function () {
                     window.open(this.$scope.audienceAnswersUrl, "_blank");
                 };
+                HomeRemoteController.prototype.openDraw = function () {
+                    window.open(this.$scope.drawUrl, "_blank");
+                };
                 HomeRemoteController.prototype.changeCurrentQuestion = function () {
                     var webSocketCall = this.socketClient.createWebSocketCall("changeCurrentQuestion", this.$scope.currentQuestion);
+                    this.socket.send(JSON.stringify(webSocketCall));
+                };
+                HomeRemoteController.prototype.runDraw = function () {
+                    var webSocketCall = this.socketClient.createWebSocketCall("runDraw", null);
+                    this.socket.send(JSON.stringify(webSocketCall));
+                };
+                HomeRemoteController.prototype.stopDraw = function () {
+                    var webSocketCall = this.socketClient.createWebSocketCall("stopDraw", null);
                     this.socket.send(JSON.stringify(webSocketCall));
                 };
                 HomeRemoteController.$inject = [
