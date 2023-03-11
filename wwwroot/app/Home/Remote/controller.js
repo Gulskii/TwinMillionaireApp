@@ -246,19 +246,19 @@ var App;
                     this.clearClock();
                     var webSocketCall = this.socketClient.createWebSocketCall("confirmAnswer", answer);
                     this.socket.send(JSON.stringify(webSocketCall));
-                    this.dataService.closeTakingAnswers();
                 };
                 HomeRemoteController.prototype.timeUp = function (ctrl, data) {
                     ctrl.currentRoundState = 5 /* RoundState.AnswerChosen */;
                     ctrl.clearClock();
                     var webSocketCall = ctrl.socketClient.createWebSocketCall("confirmAnswer", null);
                     ctrl.socket.send(JSON.stringify(webSocketCall));
-                    ctrl.dataService.closeTakingAnswers();
+                    ctrl.$scope.$applyAsync();
                 };
                 HomeRemoteController.prototype.revealCorrectAnswer = function () {
                     this.currentRoundState = 1 /* RoundState.Start */;
                     var webSocketCall = this.socketClient.createWebSocketCall("revealCorrectAnswer", null);
                     this.socket.send(JSON.stringify(webSocketCall));
+                    this.dataService.closeTakingAnswers();
                 };
                 HomeRemoteController.prototype.showConfirmAnswer = function () {
                     return this.currentRoundState === 4 /* RoundState.QuestionFullyRevealed */ || this.currentRoundState === 5 /* RoundState.AnswerChosen */;

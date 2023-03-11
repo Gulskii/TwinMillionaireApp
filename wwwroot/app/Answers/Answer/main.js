@@ -45,7 +45,7 @@ var App;
                             var context = el.canvas[0].getContext('2d');
                             setTimeout(function () {
                                 App.TextFormatters.fitTextOnCanvas(el.canvas[0], context, 0, 0, scope.choice, App.TwinFont, 42);
-                            }, 500);
+                            }, 5000);
                         });
                     }
                 }
